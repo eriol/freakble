@@ -1,7 +1,14 @@
+[tool.black]
+line-length = 88
+target-version = ["py38"]
+
+[tool.isort]
+profile = "black"
+
 [tool.poetry]
 name = "freakble"
 version = "0.1.0"
-description = ""
+description = "A simple tool to send messages into FreakWAN over Bluetooth low energy."
 authors = ["Daniele Tricoli <eriol@mornie.org>"]
 readme = "README.md"
 packages = [{include = "freakble", from = "src"}]
