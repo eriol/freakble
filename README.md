@@ -36,3 +36,16 @@ Then:
    ```console
    $ pipx install dist/freakble-0.1.0-py3-none-any.whl
    ```
+
+## Usage
+
+At the moment only the command `send` used to send a message to the board is
+implemented. You need to already know the address of the device.
+
+For example:
+
+```console
+$ freakble --device AA:AA:AA:AA:AA:AA send Hello, there!
+```
+
+where you have to substitute `AA:AA:AA:AA:AA:AA` with your device's address.
