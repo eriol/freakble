@@ -11,15 +11,28 @@ over Bluetooth low energy.
 
 The best way to install freakble is using [pipx](https://pypa.github.io/pipx/):
 ```console
-
 $ pipx install freakble
-
 ```
 
 ### Using pip
 
-```$
-
+```console
 $ python -m pip install freakble
-
 ```
+
+### From source
+
+freakble uses [Poetry](https://python-poetry.org) as dependency management and
+packaging tool, you need to install it first.
+
+Then:
+
+1. Clone this repository.
+2. From the root of the repository run:
+   ```console
+   $ poetry build
+   ```
+3. Install using pipx or pip (it's better to use pipx):
+   ```console
+   $ pipx install dist/freakble-0.1.0-py3-none-any.whl
+   ```
