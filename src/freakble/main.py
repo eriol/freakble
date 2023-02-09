@@ -1,3 +1,6 @@
+# Copyright © 2023 Daniele Tricoli <eriol@mornie.org>
+# SPDX-License-Identifier: BSD-3-Clause
+
 import asyncio
 import logging
 from functools import wraps
