@@ -72,6 +72,8 @@ async def send(ctx, messages, device, loop):
         )
     except asyncio.CancelledError:
         pass
+    except AssertionError as e:
+        click.echo(click.style(e, fg="red"))
     finally:
         await ble.disconnect()
 
