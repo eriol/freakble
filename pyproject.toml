@@ -15,7 +15,7 @@ repository = "https://noa.mornie.org/eriol/freakble"
 packages = [{include = "freakble", from = "src"}]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.9"
 ble-serial = "^2.7.0"
 click = "^8.1.3"
 
