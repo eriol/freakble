@@ -44,7 +44,9 @@ def _receive_callback(data: bytes):
 
 
 @click.group()
-@click.option("--adapter", default="hci0", type=str, help="ble adapter [default: hci0]")
+@click.option(
+    "--adapter", default="hci0", show_default="hci0", type=str, help="ble adapter"
+)
 @click.pass_context
 def cli(ctx, adapter):
     """A simple tool to send messages into FreakWAN."""  # noqa: D401
@@ -59,8 +61,9 @@ def cli(ctx, adapter):
 @click.option(
     "--sleep-time",
     default=1,
+    show_default="1 sec",
     type=float,
-    help="sleep between messages sent with --loop flag [default: 1 second]",
+    help="sleep between messages sent with --loop",
 )
 @click.argument("messages", type=str, nargs=-1)
 @click.pass_context
@@ -90,13 +93,14 @@ async def send(ctx, messages, device, loop, sleep_time):
 
 @cli.command()
 @click.option(
-    "--scan-time", default=5, type=float, help="scan duration [default: 5 seconds]"
+    "--scan-time", default=5, show_default="5 secs", type=float, help="scan duration"
 )
 @click.option(
     "--service-uuid",
     default=None,
+    show_default="None",
     type=str,
-    help="service UUID used to filtering [default: None]",
+    help="service UUID used to filter",
 )
 @click.pass_context
 @coro
@@ -109,7 +113,7 @@ async def scan(ctx, scan_time, service_uuid):
 @cli.command()
 @click.option("--device", required=True, type=str, help="ble device address")
 @click.option(
-    "--scan-time", default=5, type=float, help="scan duration [default: 5 seconds]"
+    "--scan-time", default=5, show_default="5 secs", type=float, help="scan duration"
 )
 @click.pass_context
 @coro
