@@ -3,6 +3,7 @@
 
 import asyncio
 import logging
+import warnings
 from functools import wraps
 
 import click
@@ -95,6 +96,22 @@ async def scan(ctx, scan_time, service_uuid):
     """Scan to find BLE devices."""
     devices = await scanner.scan(ctx.obj["ADAPTER"], scan_time, service_uuid)
     scanner.print_list(devices)
+
+
+@cli.command()
+@click.option("--device", required=True, type=str, help="ble device address")
+@click.option(
+    "--scan-time", default=5, type=float, help="scan duration [default: 5 seconds]"
+)
+@click.pass_context
+@coro
+async def deep_scan(ctx, device, scan_time):
+    """Scan to find services of a specific device."""
+    devices = await scanner.scan(ctx.obj["ADAPTER"], scan_time, None)
+    with warnings.catch_warnings():
+        warnings.simplefilter(action="ignore", category=FutureWarning)
+        services = await scanner.deep_scan(device, devices)
+    scanner.print_details(services)
 
 
 def run():
