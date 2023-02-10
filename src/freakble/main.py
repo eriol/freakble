@@ -41,26 +41,24 @@ def _receive_callback(data: bytes):
 
 @click.group()
 @click.option("--adapter", default="hci0", type=str, help="ble adapter [default: hci0]")
-@click.option("--device", required=True, type=str, help="ble device address")
 @click.pass_context
-def cli(ctx, adapter, device):
+def cli(ctx, adapter):
     """A simple tool to send messages into FreakWAN."""
     ctx.ensure_object(dict)
     ctx.obj["ADAPTER"] = adapter
-    ctx.obj["DEVICE"] = device
     ctx.obj["BLE"] = BLE_interface(ctx.obj["ADAPTER"], None)
 
 
 @cli.command()
-@click.pass_context
 @click.option("--loop", is_flag=True, default=False, help="send forever the messages")
+@click.option("--device", required=True, type=str, help="ble device address")
 @click.argument("messages", type=str, nargs=-1)
+@click.pass_context
 @coro
-async def send(ctx, messages, loop):
+async def send(ctx, messages, device, loop):
     """Send one or more messages over BLE to a specific device."""
     msg = " ".join(messages)
     ble = ctx.obj["BLE"]
-    device = ctx.obj["DEVICE"]
     ble.set_receiver(_receive_callback)
     try:
         logging.info(f"Connecting to {device}...")

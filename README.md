@@ -45,7 +45,7 @@ implemented. You need to already know the address of the device.
 For example:
 
 ```console
-$ freakble --device AA:AA:AA:AA:AA:AA send Hello, there!
+$ freakble send --device AA:AA:AA:AA:AA:AA Hello, there!
 ```
 
 where you have to substitute `AA:AA:AA:AA:AA:AA` with your device's address.
