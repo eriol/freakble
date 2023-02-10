@@ -97,7 +97,7 @@ of your device is called `FreakWAN_vuzasu` you can do:
 
 ```console
 $ export FREAKBLE_SEND_DEVICE=$(freakble scan | grep FreakWAN_vuzasu | cut -d' ' -f1)
-$ freakble send "La violenza è l'ultimo rifugio degli incapaci. - Iscac Asimov"
+$ freakble send "La violenza è l'ultimo rifugio degli incapaci. - Isaac Asimov"
 ```
 
 ## scan
