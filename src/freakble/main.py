@@ -20,22 +20,23 @@ def coro(f):
     return wrapper
 
 
-async def send_conditionally(ble: BLE_interface, data: bytes, loop: bool):
+async def send_conditionally(
+    ble: BLE_interface, data: bytes, loop: bool, sleep_time: float
+):
     """Send specified data.
 
-    Raise asyncio.CancelledError if loop == True after data is sent once.
+    Raise asyncio.CancelledError if loop == False after data is sent once.
     """
     ble.queue_send(data)
-    # TODO: Make the user able to specify sleep duration.
-    await asyncio.sleep(0.1)
     if not loop:
         raise asyncio.CancelledError
+    await asyncio.sleep(sleep_time)
 
 
-async def send_forever(ble: BLE_interface, data: bytes, loop: bool):
+async def send_forever(ble: BLE_interface, data: bytes, loop: bool, sleep_time: float):
     """Send data forever."""
     while True:
-        await send_conditionally(ble, data, loop)
+        await send_conditionally(ble, data, loop, sleep_time)
 
 
 def _receive_callback(data: bytes):
@@ -46,7 +47,7 @@ def _receive_callback(data: bytes):
 @click.option("--adapter", default="hci0", type=str, help="ble adapter [default: hci0]")
 @click.pass_context
 def cli(ctx, adapter):
-    """A simple tool to send messages into FreakWAN."""
+    """A simple tool to send messages into FreakWAN."""  # noqa: D401
     ctx.ensure_object(dict)
     ctx.obj["ADAPTER"] = adapter
     ctx.obj["BLE"] = BLE_interface(ctx.obj["ADAPTER"], None)
@@ -55,10 +56,16 @@ def cli(ctx, adapter):
 @cli.command()
 @click.option("--loop", is_flag=True, default=False, help="send forever the messages")
 @click.option("--device", required=True, type=str, help="ble device address")
+@click.option(
+    "--sleep-time",
+    default=1,
+    type=float,
+    help="sleep between messages sent with --loop flag [default: 1 second]",
+)
 @click.argument("messages", type=str, nargs=-1)
 @click.pass_context
 @coro
-async def send(ctx, messages, device, loop):
+async def send(ctx, messages, device, loop, sleep_time):
     """Send one or more messages over BLE to a specific device."""
     msg = " ".join(messages)
     ble = ctx.obj["BLE"]
@@ -71,7 +78,7 @@ async def send(ctx, messages, device, loop):
 
         await asyncio.gather(
             ble.send_loop(),
-            send_forever(ble, bytes(msg, "utf-8"), loop),
+            send_forever(ble, bytes(msg, "utf-8"), loop, sleep_time),
         )
     except asyncio.CancelledError:
         pass
