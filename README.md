@@ -49,3 +49,13 @@ $ freakble send --device AA:AA:AA:AA:AA:AA Hello, there!
 ```
 
 where you have to substitute `AA:AA:AA:AA:AA:AA` with your device's address.
+
+The `--loop` flag will make freakble to send continuosly the message until
+`CTRL + C` is pressed. Right now the resend interval is hardcoded and its value
+is 0.1 seconds.
+
+```console
+$ freakble send --device AA:AA:AA:AA:AA:AA --loop FREAKNET
+```
+
+![A photo of a LYLIGO TTGO LoRa v2 1.6 showing the text: you> FREAKNET in multiple lines.](extras/304f4bb6-4f51-4183-95b9-c329b9bf69ab.jpg)
