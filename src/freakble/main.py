@@ -7,6 +7,7 @@ from functools import wraps
 
 import click
 from ble_serial.bluetooth.ble_interface import BLE_interface
+from ble_serial.scan import main as scanner
 
 
 def coro(f):
@@ -76,6 +77,24 @@ async def send(ctx, messages, device, loop):
         click.echo(click.style(e, fg="red"))
     finally:
         await ble.disconnect()
+
+
+@cli.command()
+@click.option(
+    "--scan-time", default=5, type=float, help="scan duration [default: 5 seconds]"
+)
+@click.option(
+    "--service-uuid",
+    default=None,
+    type=str,
+    help="service UUID used to filtering [default: None]",
+)
+@click.pass_context
+@coro
+async def scan(ctx, scan_time, service_uuid):
+    """Scan to find BLE devices."""
+    devices = await scanner.scan(ctx.obj["ADAPTER"], scan_time, service_uuid)
+    scanner.print_list(devices)
 
 
 def run():
