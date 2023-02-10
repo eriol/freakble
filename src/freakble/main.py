@@ -56,7 +56,7 @@ def cli(ctx, adapter):
 
 
 @cli.command()
-@click.option("--loop", is_flag=True, default=False, help="send forever the messages")
+@click.option("--loop", is_flag=True, default=False, help="send forever the message")
 @click.option("--device", required=True, type=str, help="ble device address")
 @click.option(
     "--sleep-time",
@@ -65,12 +65,12 @@ def cli(ctx, adapter):
     type=float,
     help="sleep between messages sent with --loop",
 )
-@click.argument("messages", type=str, nargs=-1)
+@click.argument("words", type=str, nargs=-1)
 @click.pass_context
 @coro
-async def send(ctx, messages, device, loop, sleep_time):
-    """Send one or more messages over BLE to a specific device."""
-    msg = " ".join(messages)
+async def send(ctx, words, device, loop, sleep_time):
+    """Send one or more words over BLE to a specific device."""
+    msg = " ".join(words)
     ble = ctx.obj["BLE"]
     ble.set_receiver(_receive_callback)
     try:
