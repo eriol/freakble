@@ -39,8 +39,9 @@ async def send_forever(ble: BLE_interface, data: bytes, loop: bool, sleep_time: 
         await send_conditionally(ble, data, loop, sleep_time)
 
 
-def _receive_callback(data: bytes):
-    logging.debug("Received:", data)
+def ble_receive_callback(data: bytes):
+    """Print data received from BLE."""
+    click.echo(data)
 
 
 @click.group()
@@ -72,7 +73,7 @@ async def send(ctx, words, device, loop, sleep_time):
     """Send one or more words over BLE to a specific device."""
     msg = " ".join(words)
     ble = ctx.obj["BLE"]
-    ble.set_receiver(_receive_callback)
+    ble.set_receiver(ble_receive_callback)
     try:
         logging.info(f"Connecting to {device}...")
         await ble.connect(device, "public", 10.0)
