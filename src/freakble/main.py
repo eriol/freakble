@@ -115,6 +115,16 @@ async def deep_scan(ctx, device, scan_time):
     scanner.print_details(services)
 
 
+@cli.command()
+@coro
+async def version():
+    """Scan to find services of a specific device."""
+    # Import here to don't pollute main namespace.
+    from . import __version__
+
+    click.echo(f"freakble {__version__}")
+
+
 def run():
     """CLI entrypoint."""
     # ble-serial fire a warning on disconnect, but our main use case is to just
