@@ -52,7 +52,7 @@ Commands:
   deep-scan  Scan to find services of a specific device.
   scan       Scan to find BLE devices.
   send       Send one or more messages over BLE to a specific device.
-  version    Scan to find services of a specific device.
+  version    Return freakble version.
 ```
 
 ### send

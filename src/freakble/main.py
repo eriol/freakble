@@ -130,7 +130,7 @@ async def deep_scan(ctx, device, scan_time):
 @cli.command()
 @coro
 async def version():
-    """Scan to find services of a specific device."""
+    """Return freakble version."""
     # Import here to don't pollute main namespace.
     from . import __version__
 
