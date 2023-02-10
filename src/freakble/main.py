@@ -143,4 +143,4 @@ def run():
     # TODO: Make configurable by the user.
     logging.disable()
 
-    asyncio.run(cli())
+    asyncio.run(cli(auto_envvar_prefix="FREAKBLE"))

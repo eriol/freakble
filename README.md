@@ -92,6 +92,14 @@ $ freakble send --device AA:AA:AA:AA:AA:AA --loop FREAKNET
 
 ![A photo of a LYLIGO TTGO LoRa v2 1.6 showing the text: you> FREAKNET in multiple lines.](extras/304f4bb6-4f51-4183-95b9-c329b9bf69ab.jpg)
 
+You can use environment variables to set the device address, for example if one
+of your device is called `FreakWAN_vuzasu` you can do:
+
+```console
+$ export FREAKBLE_SEND_DEVICE=$(freakble scan | grep FreakWAN_vuzasu | cut -d' ' -f1)
+$ freakble send "La violenza è l'ultimo rifugio degli incapaci. - Iscac Asimov"
+```
+
 ## scan
 
 The `scan` command is used to discover BLE devices.
