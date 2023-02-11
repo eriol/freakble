@@ -9,10 +9,9 @@ import warnings
 from functools import wraps
 
 import click
-from ble_serial.bluetooth.ble_interface import BLE_interface
-from ble_serial.scan import main as scanner
 
 from . import __version__
+from .ble import BLE_interface, scanner, send_conditionally, send_forever, connect
 from .repl import REPL
 
 
@@ -22,25 +21,6 @@ def coro(f):
         return asyncio.run(f(*args, **kwargs))
 
     return wrapper
-
-
-async def send_conditionally(
-    ble: BLE_interface, data: bytes, loop: bool, sleep_time: float
-):
-    """Send specified data.
-
-    Raise asyncio.CancelledError if loop == False after data is sent once.
-    """
-    ble.queue_send(data)
-    if not loop:
-        raise asyncio.CancelledError
-    await asyncio.sleep(sleep_time)
-
-
-async def send_forever(ble: BLE_interface, data: bytes, loop: bool, sleep_time: float):
-    """Send data forever."""
-    while True:
-        await send_conditionally(ble, data, loop, sleep_time)
 
 
 def ble_receive_callback(data: bytes):
@@ -84,12 +64,9 @@ async def send(ctx, words, device, loop, sleep_time):
     msg = " ".join(words)
     ble = ctx.obj["BLE"]
     ble.set_receiver(ble_receive_callback)
+    logging.info(f"Connecting to {device}...")
     try:
-        logging.info(f"Connecting to {device}...")
-        await ble.connect(device, "public", 10.0)
-        # TODO: Handle WRITE_UUID and READ_UUID.
-        await ble.setup_chars(None, None, "rw")
-
+        await connect(ble, device)
         await asyncio.gather(
             ble.send_loop(),
             send_forever(ble, bytes(msg, "utf-8"), loop, sleep_time),
@@ -157,17 +134,11 @@ async def repl(ctx, device):
     """Start a REPL with the device."""
     ble = ctx.obj["BLE"]
     repl = REPL(ble)
+    click.echo(f"freakble {__version__} on {sys.platform}")
+    click.echo(f"Connecting to {device}...")
     try:
-        click.echo(f"freakble {__version__} on {sys.platform}")
-        click.echo(f"Connecting to {device}...")
-        await ble.connect(device, "public", 10.0)
-        # TODO: Handle WRITE_UUID and READ_UUID.
-        await ble.setup_chars(None, None, "rw")
-
-        await asyncio.gather(
-            ble.send_loop(),
-            repl.shell(),
-        )
+        await connect(ble, device)
+        await asyncio.gather(ble.send_loop(), repl.shell())
     except asyncio.CancelledError:
         pass
     except AssertionError as e:
