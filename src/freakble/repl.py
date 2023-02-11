@@ -9,7 +9,7 @@ from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.patch_stdout import patch_stdout
 from prompt_toolkit.shortcuts import PromptSession
 
-PROMPT_MESSAGE = "Φ> "
+PROMPT_MESSAGE = "Φ] "
 
 command_completer = WordCompleter(["!automsg off", "!automsg on", "!bat"])
 
