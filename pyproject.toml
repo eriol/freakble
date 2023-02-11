@@ -17,11 +17,12 @@ packages = [{include = "freakble", from = "src"}]
 [tool.poetry.dependencies]
 python = "^3.9"
 ble-serial = "^2.7.0"
-click = "^8.1.3"
 prompt-toolkit = "^3.0.36"
+asyncclick = "^8.1.3.4"
+anyio = "^3.6.2"
 
 [tool.poetry.scripts]
-freakble = "freakble.main:run"
+freakble = "freakble.__main__:run"
 
 
 [build-system]
