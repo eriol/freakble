@@ -25,7 +25,9 @@ class REPL:
 
     async def shell(self):
         """Display a prompt and handle user interaction."""
-        session = PromptSession(PROMPT_MESSAGE, completer=command_completer)
+        session = PromptSession(
+            PROMPT_MESSAGE, completer=command_completer, complete_while_typing=False
+        )
         while True:
             try:
                 with patch_stdout():
