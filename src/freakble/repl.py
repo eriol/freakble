@@ -4,14 +4,40 @@
 """This module contains a simple interactive shell for FreakWAN nodes."""
 
 import asyncio
+from itertools import cycle
 
-from prompt_toolkit.completion import WordCompleter
+from prompt_toolkit.completion import NestedCompleter
 from prompt_toolkit.patch_stdout import patch_stdout
 from prompt_toolkit.shortcuts import PromptSession
 
 PROMPT_MESSAGE = "Φ] "
 
-command_completer = WordCompleter(["!automsg off", "!automsg on", "!bat"])
+# These bandwidth values are for LYLIGO TTGO LoRa (TM) v2 1.6 and similar, the
+# boards we use for FreakWAN.
+BW_VALUES = [
+    7800,
+    10400,
+    15600,
+    20800,
+    31250,
+    41700,
+    62500,
+    62500,
+    125000,
+    250000,
+    500000,
+]
+
+command_completer = NestedCompleter.from_nested_dict(
+    {
+        "!automsg": {"on": None, "off": None},
+        "!bat": None,
+        "!bw": dict(zip(map(str, BW_VALUES), cycle([None]))),
+        "!cr": dict(zip(map(str, range(5, 9)), cycle([None]))),
+        "!help": None,
+        "!sp": dict(zip(map(str, range(6, 13)), cycle([None]))),
+    }
+)
 
 
 class REPL:
@@ -25,9 +51,7 @@ class REPL:
 
     async def shell(self):
         """Display a prompt and handle user interaction."""
-        session = PromptSession(
-            PROMPT_MESSAGE, completer=command_completer, complete_while_typing=False
-        )
+        session = PromptSession(PROMPT_MESSAGE, completer=command_completer)
         while True:
             try:
                 with patch_stdout():
