@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0 (2023-02-11)
+
+BREAKING CHAGES:
+- Rename the environment variable to set the device address in FREAKBLE_DEVICE.
+
+- Add repl command to interact with the device from terminal.
+- Move BLE stuff in a separate module.
+
 ## 0.2.0 (2023-02-10)
 
 - Add scan, and deep-scan commands.
