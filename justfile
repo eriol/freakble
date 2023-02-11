@@ -8,7 +8,7 @@ build:
 clean:
     @rm -rf dist/
 
-# Remove build artifacts.
+# Set version in both package and pyproject.toml.
 [linux]
 [macos]
 set-version version:
@@ -20,6 +20,6 @@ set-version version:
 run +ARGS:
     @poetry run {{ARGS}}
 
-# run freakble repl
+# Run freakble repl.
 repl:
     @poetry run freakble repl
