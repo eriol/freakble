@@ -56,17 +56,24 @@ def cli(ctx, adapter):
     type=float,
     help="sleep between messages sent with --loop",
 )
+@click.option(
+    "--ble-connection-timeout",
+    default=10,
+    show_default="10 secs",
+    type=float,
+    help="BLE connection timeout",
+)
 @click.argument("words", type=str, nargs=-1)
 @click.pass_context
 @coro
-async def send(ctx, words, device, loop, sleep_time):
+async def send(ctx, words, device, loop, sleep_time, ble_connection_timeout):
     """Send one or more words over BLE to a specific device."""
     msg = " ".join(words)
     ble = ctx.obj["BLE"]
     ble.set_receiver(ble_receive_callback)
     logging.info(f"Connecting to {device}...")
     try:
-        await connect(ble, device)
+        await connect(ble, device, ble_connection_timeout)
         await asyncio.gather(
             ble.send_loop(),
             send_forever(ble, bytes(msg, "utf-8"), loop, sleep_time),
@@ -128,16 +135,23 @@ async def deep_scan(ctx, device, scan_time):
     envvar="FREAKBLE_DEVICE",
     help="ble device address",
 )
+@click.option(
+    "--ble-connection-timeout",
+    default=10,
+    show_default="10 secs",
+    type=float,
+    help="BLE connection timeout",
+)
 @click.pass_context
 @coro
-async def repl(ctx, device):
+async def repl(ctx, device, ble_connection_timeout):
     """Start a REPL with the device."""
     ble = ctx.obj["BLE"]
     repl = REPL(ble)
     click.echo(f"freakble {__version__} on {sys.platform}")
     click.echo(f"Connecting to {device}...")
     try:
-        await connect(ble, device)
+        await connect(ble, device, ble_connection_timeout)
         await asyncio.gather(ble.send_loop(), repl.shell())
     except asyncio.CancelledError:
         pass

@@ -18,9 +18,9 @@ __all__ = [
 ]
 
 
-async def connect(ble: BLE_interface, device):
+async def connect(ble: BLE_interface, device: str, timeout: float = 10.0):
     """Connect to the specified device."""
-    await ble.connect(device, "public", 10.0)
+    await ble.connect(device, "public", timeout)
     # TODO: Handle WRITE_UUID and READ_UUID.
     await ble.setup_chars(None, None, "rw")
 
