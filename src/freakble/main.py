@@ -4,12 +4,16 @@
 
 import asyncio
 import logging
+import sys
 import warnings
 from functools import wraps
 
 import click
 from ble_serial.bluetooth.ble_interface import BLE_interface
 from ble_serial.scan import main as scanner
+
+from . import __version__
+from .repl import REPL
 
 
 def coro(f):
@@ -58,7 +62,13 @@ def cli(ctx, adapter):
 
 @cli.command()
 @click.option("--loop", is_flag=True, default=False, help="send forever the message")
-@click.option("--device", required=True, type=str, help="ble device address")
+@click.option(
+    "--device",
+    required=True,
+    type=str,
+    envvar="FREAKBLE_DEVICE",
+    help="ble device address",
+)
 @click.option(
     "--sleep-time",
     default=1,
@@ -112,7 +122,13 @@ async def scan(ctx, scan_time, service_uuid):
 
 
 @cli.command()
-@click.option("--device", required=True, type=str, help="ble device address")
+@click.option(
+    "--device",
+    required=True,
+    type=str,
+    envvar="FREAKBLE_DEVICE",
+    help="ble device address",
+)
 @click.option(
     "--scan-time", default=5, show_default="5 secs", type=float, help="scan duration"
 )
@@ -128,12 +144,42 @@ async def deep_scan(ctx, device, scan_time):
 
 
 @cli.command()
+@click.option(
+    "--device",
+    required=True,
+    type=str,
+    envvar="FREAKBLE_DEVICE",
+    help="ble device address",
+)
+@click.pass_context
+@coro
+async def repl(ctx, device):
+    """Start a REPL with the device."""
+    ble = ctx.obj["BLE"]
+    repl = REPL(ble)
+    try:
+        click.echo(f"freakble {__version__} on {sys.platform}")
+        click.echo(f"Connecting to {device}...")
+        await ble.connect(device, "public", 10.0)
+        # TODO: Handle WRITE_UUID and READ_UUID.
+        await ble.setup_chars(None, None, "rw")
+
+        await asyncio.gather(
+            ble.send_loop(),
+            repl.shell(),
+        )
+    except asyncio.CancelledError:
+        pass
+    except AssertionError as e:
+        click.echo(click.style(e, fg="red"))
+    finally:
+        await ble.disconnect()
+
+
+@cli.command()
 @coro
 async def version():
     """Return freakble version."""
-    # Import here to don't pollute main namespace.
-    from . import __version__
-
     click.echo(f"freakble {__version__}")
 
 

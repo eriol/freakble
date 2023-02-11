@@ -19,3 +19,7 @@ set-version version:
 # poetry run ...
 run +ARGS:
     @poetry run {{ARGS}}
+
+# run freakble repl
+repl:
+    @poetry run freakble repl
