@@ -50,8 +50,9 @@ Options:
 
 Commands:
   deep-scan  Scan to find services of a specific device.
+  repl       Start a REPL with the device.
   scan       Scan to find BLE devices.
-  send       Send one or more messages over BLE to a specific device.
+  send       Send one or more words over BLE to a specific device.
   version    Return freakble version.
 ```
 
@@ -92,11 +93,14 @@ $ freakble send --device AA:AA:AA:AA:AA:AA --loop FREAKNET
 
 ![A photo of a LYLIGO TTGO LoRa v2 1.6 showing the text: you> FREAKNET in multiple lines.](extras/304f4bb6-4f51-4183-95b9-c329b9bf69ab.jpg)
 
-You can use environment variables to set the device address, for example if one
-of your device is called `FreakWAN_vuzasu` you can do:
+You can use `FREAKBLE_DEVICE` environment variables to set the device address,
+and to not have to provide it in each commands that need a device address.
+
+For example, using `send`, if one of your device is called `FreakWAN_vuzasu`
+you can do:
 
 ```console
-$ export FREAKBLE_SEND_DEVICE=$(freakble scan | grep FreakWAN_vuzasu | cut -d' ' -f1)
+$ export FREAKBLE_DEVICE=$(freakble scan | grep FreakWAN_vuzasu | cut -d' ' -f1)
 $ freakble send "La violenza è l'ultimo rifugio degli incapaci. - Isaac Asimov"
 ```
 
@@ -139,6 +143,41 @@ Options:
   --help             Show this message and exit.
 
 ```
+
+## repl
+
+The `repl` command connects to the specified device and stats an interactive
+shell with it.
+
+```console
+$ export FREAKBLE_DEVICE=$(freakble scan | grep FreakWAN | cut -d' ' -f1)
+freakble 0.3.0a0 on linux
+Connecting to AB:AB:AB:AB:AB:AB...
+Φ]
+```
+
+`Φ]` is the freakble prompt.
+
+You can then talk to the device remembering that commands start with `!` and
+the text you write if it's not a command is sent as a message in the network.
+
+For example, the following text is sent as a message in the network:
+```
+Φ] Hello there!
+Φ]
+```
+
+Instead commands make you able to get info or configure your FreakWAN node:
+```
+Φ] !help
+Commands: !automsg !sp !cr !bw !freq
+Φ] !bat
+battery volts: 4.2
+```
+
+Pressing `TAB` key or `!` will show the autocompletion menu.
+
+To exit from the interactive shell use `CTRL + D` or `CTRL + C`
 
 ## License
 
