@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1 (2023-02-11)
+
+- Expose BLE connection timeout on CLI.
+- Switch to asyncclick: this fix "got Future <Future pending> attached to a
+  different loop" on Python 3.9.
+
 ## 0.3.0 (2023-02-11)
 
 BREAKING CHAGES:
