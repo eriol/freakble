@@ -19,8 +19,9 @@ class REPL:
 
     def __init__(self, ble) -> None:  # noqa: D107
         # We consider the BLE interface already connected and we use it to
-        # send data. The ownership remains outside of this class.
+        # send and receive data. The ownership remains outside of this class.
         self.ble = ble
+        self.ble.set_receiver(self._on_ble_data_received)
 
     async def shell(self):
         """Display a prompt and handle user interaction."""
@@ -33,7 +34,7 @@ class REPL:
             except (EOFError, KeyboardInterrupt):
                 raise asyncio.CancelledError
 
-    def on_ble_data_received(self, data):
+    def _on_ble_data_received(self, data):
         """Print data received from ble."""
         data = data.decode("utf-8")
         print(f"{data}")
