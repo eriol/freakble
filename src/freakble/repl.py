@@ -62,7 +62,7 @@ class REPL:
 
     def _on_ble_data_received(self, data):
         """Print data received from ble."""
-        data = data.decode("utf-8")
+        data = data.decode("utf-8").rstrip()
         print(f"{data}")
 
     def _send_over_ble(self, data):
