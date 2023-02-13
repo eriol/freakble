@@ -18,8 +18,9 @@ class Window(tk.Tk):
 
     def quit(self):
         self.root.destroy()
-        # TODO: properly close.
-        # self.loop.stop()
+        # TODO: properly close using an asyncio.Event: using click is hard to
+        # pass it from main. One possible solution is to stop using click.
+        self.loop.stop()
 
     async def show(self):
         while True:

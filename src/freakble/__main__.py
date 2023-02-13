@@ -15,7 +15,10 @@ def run():
     # send a message and disconnect, so we disable logging here.
     # TODO: Make configurable by the user.
     logging.disable()
-    asyncio.run(get_cli())
+    try:
+        asyncio.run(get_cli())
+    except RuntimeError:
+        pass
 
 
 if __name__ == "__main__":
