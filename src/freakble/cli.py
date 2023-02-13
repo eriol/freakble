@@ -24,7 +24,7 @@ def ble_receive_callback(data: bytes):
 )
 @click.pass_context
 def cli(ctx, adapter):
-    """A simple tool to send messages into FreakWAN."""  # noqa: D401
+    """A simple tool to send messages into FreakWAN."""
     ctx.ensure_object(dict)
     ctx.obj["ADAPTER"] = adapter
 

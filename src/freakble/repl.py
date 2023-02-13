@@ -43,7 +43,7 @@ command_completer = NestedCompleter.from_nested_dict(
 class REPL:
     """Simple interactive shell able to send data over BLE."""
 
-    def __init__(self, ble) -> None:  # noqa: D107
+    def __init__(self, ble) -> None:
         # We consider the BLE interface already connected and we use it to
         # send and receive data. The ownership remains outside of this class.
         self.ble = ble

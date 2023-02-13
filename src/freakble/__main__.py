@@ -10,7 +10,7 @@ from .cli import get_cli
 
 
 def run():
-    """Main entrypoint."""  # noqa: D401
+    """Main entrypoint."""
     # ble-serial fire a warning on disconnect, but our main use case is to just
     # send a message and disconnect, so we disable logging here.
     # TODO: Make configurable by the user.
