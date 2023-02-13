@@ -139,10 +139,27 @@ async def repl(ctx, device, ble_connection_timeout):
 
 
 @cli.command()
-async def gui():
+@click.option(
+    "--device",
+    required=True,
+    type=str,
+    envvar="FREAKBLE_DEVICE",
+    help="ble device address",
+)
+@click.option(
+    "--ble-connection-timeout",
+    default=10,
+    show_default="10 secs",
+    type=float,
+    help="BLE connection timeout",
+)
+@click.pass_context
+async def gui(ctx, device, ble_connection_timeout):
     """Start freakble GUI."""
 
-    await App().run()
+    app = App()
+    app.config(ctx.obj["ADAPTER"], device, ble_connection_timeout)
+    await app.run()
 
 
 @cli.command()
