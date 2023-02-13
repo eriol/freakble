@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.2 (2023-02-14)
+
+- Remove newline in BLE replies.
+- Refactor to move all the BLE stuff in BLE module.
+
 ## 0.3.1 (2023-02-11)
 
 - Expose BLE connection timeout on CLI.
