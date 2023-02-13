@@ -11,6 +11,7 @@ import asyncclick as click
 
 from . import __version__
 from .ble import repl_loop, scanner, send_text
+from .gui import App
 
 
 def ble_receive_callback(data: bytes):
@@ -135,6 +136,13 @@ async def repl(ctx, device, ble_connection_timeout):
         await repl_loop(ctx.obj["ADAPTER"], device, ble_connection_timeout)
     except AssertionError as e:
         click.echo(click.style(e, fg="red"))
+
+
+@cli.command()
+async def gui():
+    """Start freakble GUI."""
+
+    await App().run()
 
 
 @cli.command()
