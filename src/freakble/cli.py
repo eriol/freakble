@@ -3,17 +3,14 @@
 
 """CLI related stuff for freakble."""
 
-import asyncio
 import logging
 import sys
 import warnings
-from functools import wraps
 
 import asyncclick as click
 
 from . import __version__
-from .ble import BLE_interface, scanner, send_conditionally, send_forever, connect
-from .repl import REPL
+from .ble import repl_loop, scanner, send_text
 
 
 def ble_receive_callback(data: bytes):
@@ -30,7 +27,6 @@ def cli(ctx, adapter):
     """A simple tool to send messages into FreakWAN."""  # noqa: D401
     ctx.ensure_object(dict)
     ctx.obj["ADAPTER"] = adapter
-    ctx.obj["BLE"] = BLE_interface(ctx.obj["ADAPTER"], None)
 
 
 @cli.command()
@@ -61,21 +57,19 @@ def cli(ctx, adapter):
 async def send(ctx, words, device, loop, sleep_time, ble_connection_timeout):
     """Send one or more words over BLE to a specific device."""
     msg = " ".join(words)
-    ble = ctx.obj["BLE"]
-    ble.set_receiver(ble_receive_callback)
     logging.info(f"Connecting to {device}...")
     try:
-        await connect(ble, device, ble_connection_timeout)
-        await asyncio.gather(
-            ble.send_loop(),
-            send_forever(ble, bytes(msg, "utf-8"), loop, sleep_time),
+        await send_text(
+            ctx.obj["ADAPTER"],
+            msg,
+            device,
+            loop,
+            sleep_time,
+            ble_connection_timeout,
+            ble_receive_callback,
         )
-    except asyncio.CancelledError:
-        pass
     except AssertionError as e:
         click.echo(click.style(e, fg="red"))
-    finally:
-        await ble.disconnect()
 
 
 @cli.command()
@@ -135,19 +129,12 @@ async def deep_scan(ctx, device, scan_time):
 @click.pass_context
 async def repl(ctx, device, ble_connection_timeout):
     """Start a REPL with the device."""
-    ble = ctx.obj["BLE"]
-    repl = REPL(ble)
     click.echo(f"freakble {__version__} on {sys.platform}")
     click.echo(f"Connecting to {device}...")
     try:
-        await connect(ble, device, ble_connection_timeout)
-        await asyncio.gather(ble.send_loop(), repl.shell())
-    except asyncio.CancelledError:
-        pass
+        await repl_loop(ctx.obj["ADAPTER"], device, ble_connection_timeout)
     except AssertionError as e:
         click.echo(click.style(e, fg="red"))
-    finally:
-        await ble.disconnect()
 
 
 @cli.command()
