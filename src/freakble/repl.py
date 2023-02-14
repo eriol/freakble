@@ -1,7 +1,7 @@
 # Copyright © 2023 Daniele Tricoli <eriol@mornie.org>
 # SPDX-License-Identifier: BSD-3-Clause
 
-"""This module contains a simple interactive shell for FreakWAN nodes."""
+"""This module contains a simple interactive shell for freakble."""
 
 import asyncio
 from itertools import cycle

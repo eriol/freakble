@@ -1,7 +1,14 @@
+# Copyright © 2023 Daniele Tricoli <eriol@mornie.org>
+# SPDX-License-Identifier: BSD-3-Clause
+
+"""This module contains a simple GUI for freakble."""
+
 import asyncio
 import tkinter as tk
 from datetime import datetime
 from tkinter import ttk
+
+from ttkthemes import ThemedTk
 
 from .ble import BLE_interface
 from .ble import connect as ble_connect
@@ -24,7 +31,7 @@ class Window(tk.Tk):
     def __init__(self, app, loop):
         self.app = app
         self.loop = loop
-        self.root = tk.Tk()
+        self.root = ThemedTk(theme="breeze")
         self.root.title("freakble")
         self.root.geometry(WINDOW_SIZE)
 
