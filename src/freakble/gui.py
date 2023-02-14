@@ -34,6 +34,7 @@ class Window(tk.Tk):
         self.root = ThemedTk(theme="breeze")
         self.root.title("freakble")
         self.root.geometry(WINDOW_SIZE)
+        self.root.option_add("*Font", "12")
 
         self.make_ui()
 
