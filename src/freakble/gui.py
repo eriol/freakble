@@ -7,17 +7,6 @@ from .ble import BLE_interface
 from .ble import connect as ble_connect
 
 
-class TimedBuffer:
-    def __init__(self):
-        self._buffer = []
-
-    def append(self, data):
-        self._buffer.append(f"[{datetime.now()}] {data}")
-
-    def content(self):
-        return "\n".join(self._buffer)
-
-
 class App:
     def config(self, adapter, device, ble_connection_timeout):
         self.adapter = adapter
@@ -37,7 +26,6 @@ class Window(tk.Tk):
         self.root.title("freakble")
         self.root.geometry("640x480")
 
-        self.buffer = TimedBuffer()
         self.make_ui()
 
         self.task1 = self.loop.create_task(self.ble_loop())
@@ -47,6 +35,9 @@ class Window(tk.Tk):
     def make_ui(self):
         self.entry = ttk.Entry(self.root)
         self.entry.pack(side=tk.TOP, fill=tk.X)
+        self.entry.focus_set()
+        self.entry.bind("<Return>", self.on_entry_return)
+
         self.frame = ttk.Frame(self.root, borderwidth=5, relief="ridge", height=100)
         self.frame.pack(fill=tk.BOTH, expand=True)
         self.v_scrollbar = ttk.Scrollbar(self.frame)
@@ -64,21 +55,28 @@ class Window(tk.Tk):
 
     async def ble_loop(self):
         self.ble = BLE_interface(self.app.adapter, None)
-        self.ble.set_receiver(self._on_ble_data_received)
+        self.ble.set_receiver(self.on_ble_data_received)
         await ble_connect(self.ble, self.app.device, self.app.ble_connection_timeout)
-        await asyncio.gather(self.ble.send_loop(), self.send())
+        await self.ble.send_loop()
 
-    async def send(self):
-        while True:
-            # self.ble.queue_send(bytes("Hello!", "utf-8"))
-            await asyncio.sleep(10)
+    def send_over_ble(self, data):
+        self.ble.queue_send(bytes(data, "utf-8"))
 
-    def _on_ble_data_received(self, data):
+    def on_ble_data_received(self, data):
         data = data.decode("utf-8")
-        print(f"Rx: {data.rstrip()}")
+        self.insert_text(data)
+
+    def insert_text(self, text):
+        now = datetime.now().strftime("%y/%m/%d %H:%M:%S")
         self.text["state"] = tk.NORMAL
-        self.text.insert(tk.END, data)
+        self.text.insert(tk.END, f"[{now}] {text}")
         self.text["state"] = tk.DISABLED
+
+    def on_entry_return(self, e):
+        text = e.widget.get()
+        self.send_over_ble(text)
+        self.insert_text(f"{text}\n")
+        e.widget.delete(0, len(text))
 
     def quit(self):
         self.root.destroy()
