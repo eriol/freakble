@@ -45,14 +45,22 @@ class Window(tk.Tk):
         self.root.protocol("WM_DELETE_WINDOW", self.quit)
 
     def make_ui(self):
+        self.entry = ttk.Entry(self.root)
+        self.entry.pack(side=tk.TOP, fill=tk.X)
         self.frame = ttk.Frame(self.root, borderwidth=5, relief="ridge", height=100)
         self.frame.pack(fill=tk.BOTH, expand=True)
-        self.message = tk.Message(
-            self.frame, bg="white", justify="left", anchor="nw", width=640
+        self.v_scrollbar = ttk.Scrollbar(self.frame)
+        self.v_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.text = tk.Text(
+            self.frame,
+            bg="white",
+            width=640,
+            height=300,
+            yscrollcommand=self.v_scrollbar.set,
+            state=tk.DISABLED,
         )
-        self.message.pack(fill=tk.BOTH, expand=True)
-        self.entry = ttk.Entry(self.root)
-        self.entry.pack(fill=tk.X)
+        self.text.pack(side=tk.TOP, fill=tk.BOTH)
+        self.v_scrollbar.config(command=self.text.yview)
 
     async def ble_loop(self):
         self.ble = BLE_interface(self.app.adapter, None)
@@ -66,9 +74,11 @@ class Window(tk.Tk):
             await asyncio.sleep(10)
 
     def _on_ble_data_received(self, data):
-        data = data.decode("utf-8").rstrip()
-        print(f"Rx: {data}")
-        self.buffer.append(data)
+        data = data.decode("utf-8")
+        print(f"Rx: {data.rstrip()}")
+        self.text["state"] = tk.NORMAL
+        self.text.insert(tk.END, data)
+        self.text["state"] = tk.DISABLED
 
     def quit(self):
         self.root.destroy()
@@ -78,6 +88,5 @@ class Window(tk.Tk):
 
     async def show(self):
         while True:
-            self.message["text"] = self.buffer.content()
             self.root.update()
             await asyncio.sleep(0.1)
