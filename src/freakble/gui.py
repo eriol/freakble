@@ -6,6 +6,8 @@ from tkinter import ttk
 from .ble import BLE_interface
 from .ble import connect as ble_connect
 
+WINDOW_SIZE = "800x600"
+
 
 class App:
     def config(self, adapter, device, ble_connection_timeout):
@@ -24,34 +26,43 @@ class Window(tk.Tk):
         self.loop = loop
         self.root = tk.Tk()
         self.root.title("freakble")
-        self.root.geometry("640x480")
+        self.root.geometry(WINDOW_SIZE)
 
         self.make_ui()
 
-        self.task1 = self.loop.create_task(self.ble_loop())
+        self.task = self.loop.create_task(self.ble_loop())
 
         self.root.protocol("WM_DELETE_WINDOW", self.quit)
 
     def make_ui(self):
-        self.entry = ttk.Entry(self.root)
-        self.entry.pack(side=tk.TOP, fill=tk.X)
-        self.entry.focus_set()
-        self.entry.bind("<Return>", self.on_entry_return)
-
-        self.frame = ttk.Frame(self.root, borderwidth=5, relief="ridge", height=100)
+        self.frame = ttk.Frame(self.root)
         self.frame.pack(fill=tk.BOTH, expand=True)
-        self.v_scrollbar = ttk.Scrollbar(self.frame)
+        self.frame.rowconfigure(0, weight=1)
+        self.frame.columnconfigure(0, weight=1)
+
+        self.frame_text = ttk.Frame(self.frame, relief="ridge", width=100, height=100)
+        self.frame_text.grid(row=0, column=0, sticky="news")
+        self.frame_text.rowconfigure(0, weight=1)
+        self.frame_text.columnconfigure(0, weight=1)
+        self.v_scrollbar = ttk.Scrollbar(self.frame_text)
         self.v_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.text = tk.Text(
-            self.frame,
+            self.frame_text,
             bg="white",
-            width=640,
-            height=300,
+            width=100,
+            height=100,
             yscrollcommand=self.v_scrollbar.set,
             state=tk.DISABLED,
         )
-        self.text.pack(side=tk.TOP, fill=tk.BOTH)
+        self.text.pack(side=tk.TOP, fill=tk.X)
         self.v_scrollbar.config(command=self.text.yview)
+
+        self.entry = ttk.Entry(self.frame, width=100)
+        self.entry.grid(row=1, column=0, sticky="news")
+        self.entry.rowconfigure(0, weight=1)
+        self.entry.columnconfigure(0, weight=1)
+        self.entry.focus_set()
+        self.entry.bind("<Return>", self.on_entry_return)
 
     async def ble_loop(self):
         self.ble = BLE_interface(self.app.adapter, None)
