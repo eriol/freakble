@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.0 (2023-02-15)
+
+- Set minimum Python version to 3.8 (after testing).
+- Initial GUI support (not complete yet)
+
 ## 0.3.2 (2023-02-14)
 
 - Remove newline in BLE replies.
