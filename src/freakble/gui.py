@@ -73,7 +73,7 @@ class Window(tk.Tk):
         self.entry.bind("<Return>", self.on_entry_return)
 
     async def ble_loop(self):
-        self.ble = BLE_interface(self.app.adapter, None)
+        self.ble = BLE_interface(self.app.adapter, "")
         self.ble.set_receiver(self.on_ble_data_received)
         await ble_connect(self.ble, self.app.device, self.app.ble_connection_timeout)
         await self.ble.send_loop()
