@@ -103,7 +103,7 @@ class Window(tk.Tk):
         # Scroll to the end.
         self.text.see(tk.END)
 
-    def on_entry_return(self, e):
+    def on_entry_return(self, _):
         text = self.entry.get()
         self.send_over_ble(text)
         self.insert_text(f"{text}\n")
