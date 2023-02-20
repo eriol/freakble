@@ -71,6 +71,11 @@ class Window(tk.Tk):
         self.entry.columnconfigure(0, weight=1)
         self.entry.focus_set()
         self.entry.bind("<Return>", self.on_entry_return)
+        self.button = ttk.Button(self.entry, text="⮕")
+        self.button.pack(side=tk.RIGHT)
+        self.button.rowconfigure(1, weight=1)
+        self.button.columnconfigure(1, weight=1)
+        self.button.bind("<Button-1>", self.on_entry_return)
 
     async def ble_loop(self):
         self.ble = BLE_interface(self.app.adapter, "")
@@ -92,10 +97,10 @@ class Window(tk.Tk):
         self.text["state"] = tk.DISABLED
 
     def on_entry_return(self, e):
-        text = e.widget.get()
+        text = self.entry.get()
         self.send_over_ble(text)
         self.insert_text(f"{text}\n")
-        e.widget.delete(0, len(text))
+        self.entry.delete(0, len(text))
 
     def quit(self):
         self.root.destroy()
