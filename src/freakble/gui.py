@@ -76,7 +76,7 @@ class Window(tk.Tk):
         self.entry.columnconfigure(0, weight=1)
         self.entry.focus_set()
         self.entry.bind("<Return>", self.on_entry_return)
-        self.button = ttk.Button(self.frame_send, text="⮕")
+        self.button = ttk.Button(self.frame_send, text="⮞")
         self.button.grid(row=1, column=1, sticky="nesw")
         self.button.rowconfigure(1, weight=1)
         self.button.columnconfigure(1, weight=1)
@@ -100,6 +100,8 @@ class Window(tk.Tk):
         self.text["state"] = tk.NORMAL
         self.text.insert(tk.END, f"[{now}] {text}")
         self.text["state"] = tk.DISABLED
+        # Scroll to the end.
+        self.text.see(tk.END)
 
     def on_entry_return(self, e):
         text = self.entry.get()
