@@ -77,7 +77,7 @@ class Window(tk.Tk):
         self.entry.focus_set()
         self.entry.bind("<Return>", self.on_entry_return)
         self.button = ttk.Button(self.frame_send, text="⮕")
-        self.button.grid(row=1, column=1)
+        self.button.grid(row=1, column=1, sticky="nesw")
         self.button.rowconfigure(1, weight=1)
         self.button.columnconfigure(1, weight=1)
         self.button.bind("<Button-1>", self.on_entry_return)
