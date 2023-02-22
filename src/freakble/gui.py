@@ -74,7 +74,7 @@ class MainWindow(ThemedTk):
         frame.tkraise()
 
 
-class ScanWindow(tk.Frame):
+class ScanWindow(ttk.Frame):
     def __init__(self, parent, main_window):
         super().__init__(parent)
 
@@ -88,7 +88,7 @@ class ScanWindow(tk.Frame):
         self.button.grid(row=1, column=1, sticky="nesw")
 
 
-class DeviceWindow(tk.Frame):
+class DeviceWindow(ttk.Frame):
     def __init__(self, parent, main_window):
         super().__init__(parent)
 
