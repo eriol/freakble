@@ -141,7 +141,7 @@ async def repl(ctx, device, ble_connection_timeout):
 @cli.command()
 @click.option(
     "--device",
-    required=True,
+    default=None,
     type=str,
     envvar="FREAKBLE_DEVICE",
     help="ble device address",

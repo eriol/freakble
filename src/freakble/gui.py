@@ -49,7 +49,11 @@ class MainWindow(ThemedTk):
             self.windows[window] = w
             w.grid(row=0, column=0, sticky="news")
 
-        self.show_window(ScanWindow)
+        if self.app.device is None:
+            self.show_window(ScanWindow)
+        else:
+            self.windows[DeviceWindow].connect()
+            self.show_window(DeviceWindow)
 
     def make_ui(self):
         self.container = ttk.Frame(self)
