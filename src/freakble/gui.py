@@ -8,10 +8,11 @@ import tkinter as tk
 from datetime import datetime
 from tkinter import ttk
 
-from ttkthemes import ThemedTk
-
 from .ble import BLE_interface
 from .ble import connect as ble_connect
+
+# from ttkthemes import ThemedTk
+
 
 WINDOW_SIZE = "800x600"
 
@@ -21,34 +22,92 @@ class App:
         self.adapter = adapter
         self.device = device
         self.ble_connection_timeout = ble_connection_timeout
+        self.loop = asyncio.get_event_loop()
 
     async def run(self):
-        self.window = Window(self, asyncio.get_event_loop())
+        self.window = MainWindow(self)
         await self.window.show()
 
 
-class Window(tk.Tk):
-    def __init__(self, app, loop):
+class MainWindow(tk.Tk):
+    def __init__(self, app, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
         self.app = app
-        self.loop = loop
-        self.root = ThemedTk(theme="breeze")
-        self.root.title("freakble")
-        self.root.geometry(WINDOW_SIZE)
-        self.root.option_add("*Font", "12")
+        # self.root = ThemedTk(theme="breeze")
+        self.title("freakble")
+        self.geometry(WINDOW_SIZE)
+        self.option_add("*Font", "12")
+
+        self.protocol("WM_DELETE_WINDOW", self.quit)
 
         self.make_ui()
 
-        self.task = self.loop.create_task(self.ble_loop())
+        self.windows = {}
 
-        self.root.protocol("WM_DELETE_WINDOW", self.quit)
+        for window in (ScanWindow, DeviceWindow):
+            w = window(self.container, self)
+            self.windows[window] = w
+            w.grid(row=0, column=0, sticky="nsew")
+
+        self.show_window(DeviceWindow)
 
     def make_ui(self):
-        self.frame = ttk.Frame(self.root)
-        self.frame.pack(fill=tk.BOTH, expand=True)
-        self.frame.rowconfigure(0, weight=1)
-        self.frame.columnconfigure(0, weight=1)
+        self.container = ttk.Frame(self)
+        self.container.pack(fill=tk.BOTH, expand=True)
+        self.container.rowconfigure(0, weight=1)
+        self.container.columnconfigure(0, weight=1)
 
-        self.frame_text = ttk.Frame(self.frame, relief="ridge", width=100, height=100)
+    def quit(self):
+        self.destroy()
+        # TODO: properly close using an asyncio.Event: using click is hard to
+        # pass it from main. One possible solution is to stop using click.
+        self.app.loop.stop()
+
+    async def show(self):
+        while True:
+            self.update()
+            await asyncio.sleep(0.1)
+
+    def show_window(self, window):
+        for w in self.windows:
+            w.grid_forget(self)
+
+        frame = self.windows[window]
+        frame.tkraise()
+        print("Raise", frame)
+
+
+class ScanWindow(tk.Frame):
+    def __init__(self, parent, main_window):
+        # super().__init__(parent)
+        tk.Frame.__init__(self, parent)
+
+        self.parent = parent
+        self.main_window = main_window
+
+        self.make_ui()
+
+    def make_ui(self):
+        # self.frame = ttk.Frame(self.parent, relief="ridge", width=100, height=100)
+        # self.frame.grid(row=0, column=0, sticky="news")
+        self.button = ttk.Button(self, text="Scan")
+        self.button.grid(row=1, column=1, sticky="nesw")
+
+
+class DeviceWindow(tk.Frame):
+    def __init__(self, parent, main_window):
+        # super().__init__(parent)
+        tk.Frame.__init__(self, parent)
+
+        self.parent = parent
+        self.main_window = main_window
+
+        self.make_ui()
+
+        self.task = self.main_window.app.loop.create_task(self.ble_loop())
+
+    def make_ui(self):
+        self.frame_text = ttk.Frame(self, relief="ridge", width=100, height=100)
         self.frame_text.grid(row=0, column=0, sticky="news")
         self.frame_text.rowconfigure(0, weight=1)
         self.frame_text.columnconfigure(0, weight=1)
@@ -65,7 +124,7 @@ class Window(tk.Tk):
         self.text.pack(side=tk.TOP, fill=tk.X)
         self.v_scrollbar.config(command=self.text.yview)
 
-        self.frame_send = ttk.Frame(self.frame, width=100)
+        self.frame_send = ttk.Frame(self, width=100)
         self.frame_send.grid(row=1, column=0, sticky="news")
         self.frame_send.rowconfigure(1, weight=1)
         self.frame_send.columnconfigure(0, weight=1)
@@ -83,9 +142,13 @@ class Window(tk.Tk):
         self.button.bind("<Button-1>", self.on_entry_return)
 
     async def ble_loop(self):
-        self.ble = BLE_interface(self.app.adapter, "")
+        self.ble = BLE_interface(self.main_window.app.adapter, "")
         self.ble.set_receiver(self.on_ble_data_received)
-        await ble_connect(self.ble, self.app.device, self.app.ble_connection_timeout)
+        await ble_connect(
+            self.ble,
+            self.main_window.app.device,
+            self.main_window.app.ble_connection_timeout,
+        )
         await self.ble.send_loop()
 
     def send_over_ble(self, data):
@@ -108,14 +171,3 @@ class Window(tk.Tk):
         self.send_over_ble(text)
         self.insert_text(f"{text}\n")
         self.entry.delete(0, len(text))
-
-    def quit(self):
-        self.root.destroy()
-        # TODO: properly close using an asyncio.Event: using click is hard to
-        # pass it from main. One possible solution is to stop using click.
-        self.loop.stop()
-
-    async def show(self):
-        while True:
-            self.root.update()
-            await asyncio.sleep(0.1)
