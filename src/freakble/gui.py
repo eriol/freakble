@@ -6,7 +6,7 @@
 import asyncio
 import tkinter as tk
 from datetime import datetime
-from tkinter import scrolledtext, ttk
+from tkinter import ttk
 
 from ttkthemes import ThemedTk
 
@@ -31,10 +31,11 @@ class App:
 class MainWindow(ThemedTk):
     def __init__(self, app, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.app = app
         self.title("freakble")
         self.geometry(WINDOW_SIZE)
         self.option_add("*Font", "12")
+
+        self.app = app
 
         self.protocol("WM_DELETE_WINDOW", self.quit)
 
@@ -103,12 +104,23 @@ class DeviceWindow(ttk.Frame):
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
 
-        self.text = scrolledtext.ScrolledText(
-            self,
+        self.frame_text = ttk.Frame(self, relief="ridge", width=100, height=100)
+        self.frame_text.rowconfigure(0, weight=1)
+        self.frame_text.columnconfigure(0, weight=1)
+        self.v_scrollbar = ttk.Scrollbar(self.frame_text)
+        self.v_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.text = tk.Text(
+            self.frame_text,
             bg="white",
+            width=100,
+            height=100,
+            yscrollcommand=self.v_scrollbar.set,
             state=tk.DISABLED,
         )
-        self.text.grid(row=0, column=0, sticky="news")
+        self.text.pack(side=tk.TOP, fill=tk.X)
+        self.v_scrollbar.config(command=self.text.yview)
+
+        self.frame_text.grid(row=0, column=0, sticky="news")
 
         self.frame_send = ttk.Frame(self, width=100)
         self.frame_send.grid(row=1, column=0, sticky="news")
