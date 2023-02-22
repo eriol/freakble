@@ -44,7 +44,7 @@ class MainWindow(ThemedTk):
 
         self.windows = {}
 
-        for window in (ScanWindow,):
+        for window in (ScanWindow, DeviceWindow):
             w = window(self.container, self)
             self.windows[window] = w
             w.grid(row=0, column=0, sticky="news")
@@ -69,6 +69,7 @@ class MainWindow(ThemedTk):
             await asyncio.sleep(0.1)
 
     def show_window(self, window):
+        print("Show window:", window)
         for w in self.windows:
             w.grid_forget(self)
 
@@ -98,6 +99,7 @@ class ScanWindow(ttk.Frame):
         self.listbox = tk.Listbox(
             self.frame_devices, width=40, height=10, selectmode=tk.SINGLE, bg="white"
         )
+        self.listbox.bind("<<ListboxSelect>>", self.on_listbox_clicked)
         self.listbox.grid(row=0, column=0, sticky="news", padx=10, pady=10)
 
         self.frame_buttons = ttk.Frame(self, width=100)
@@ -115,7 +117,10 @@ class ScanWindow(ttk.Frame):
         self.button_scan.grid(row=0, column=0, sticky="news", padx=10, pady=10)
 
         self.button_connect = ttk.Button(
-            self.frame_buttons, text="Connect", state=tk.DISABLED
+            self.frame_buttons,
+            text="Connect",
+            state=tk.DISABLED,
+            command=self.on_button_connect_clicked,
         )
         self.button_connect.grid(row=0, column=1, sticky="news", padx=10, pady=10)
 
@@ -123,6 +128,7 @@ class ScanWindow(ttk.Frame):
         # Clear listbox.
         self.listbox.delete(0, self.listbox.size())
 
+        self.button_connect["state"] = tk.DISABLED
         self.button_scan["state"] = tk.DISABLED
         self.button_scan.configure(text="Scanning...")
 
@@ -137,6 +143,12 @@ class ScanWindow(ttk.Frame):
         self.button_scan.configure(text="Scan")
         self.button_scan["state"] = tk.NORMAL
 
+    def on_listbox_clicked(self, _):
+        self.button_connect["state"] = tk.NORMAL
+
+    def on_button_connect_clicked(self):
+        self.main_window.show_window(DeviceWindow)
+
 
 class DeviceWindow(ttk.Frame):
     def __init__(self, parent, main_window):
@@ -146,6 +158,7 @@ class DeviceWindow(ttk.Frame):
 
         self.make_ui()
 
+    def connect(self):
         self.task = self.main_window.app.loop.create_task(self.ble_loop())
 
     def make_ui(self):
