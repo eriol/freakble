@@ -6,15 +6,14 @@
 import asyncio
 import tkinter as tk
 from datetime import datetime
-from tkinter import ttk
+from tkinter import scrolledtext, ttk
+
+from ttkthemes import ThemedTk
 
 from .ble import BLE_interface
 from .ble import connect as ble_connect
 
-# from ttkthemes import ThemedTk
-
-
-WINDOW_SIZE = "800x800"
+WINDOW_SIZE = "800x600"
 
 
 class App:
@@ -25,15 +24,14 @@ class App:
         self.loop = asyncio.get_event_loop()
 
     async def run(self):
-        self.window = MainWindow(self)
+        self.window = MainWindow(self, theme="breeze")
         await self.window.show()
 
 
-class MainWindow(tk.Tk):
+class MainWindow(ThemedTk):
     def __init__(self, app, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.app = app
-        # self.root = ThemedTk(theme="breeze")
         self.title("freakble")
         self.geometry(WINDOW_SIZE)
         self.option_add("*Font", "12")
@@ -47,13 +45,13 @@ class MainWindow(tk.Tk):
         for window in (ScanWindow, DeviceWindow):
             w = window(self.container, self)
             self.windows[window] = w
-            w.grid(row=0, column=0, sticky="nsew")
+            w.grid(row=0, column=0, sticky="news")
 
         self.show_window(DeviceWindow)
 
     def make_ui(self):
         self.container = ttk.Frame(self)
-        self.container.pack(fill=tk.BOTH, expand=True)
+        self.container.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.container.rowconfigure(0, weight=1)
         self.container.columnconfigure(0, weight=1)
 
@@ -74,13 +72,11 @@ class MainWindow(tk.Tk):
 
         frame = self.windows[window]
         frame.tkraise()
-        print("Raise", frame)
 
 
 class ScanWindow(tk.Frame):
     def __init__(self, parent, main_window):
-        # super().__init__(parent)
-        tk.Frame.__init__(self, parent)
+        super().__init__(parent)
 
         self.parent = parent
         self.main_window = main_window
@@ -88,8 +84,6 @@ class ScanWindow(tk.Frame):
         self.make_ui()
 
     def make_ui(self):
-        # self.frame = ttk.Frame(self.parent, relief="ridge", width=100, height=100)
-        # self.frame.grid(row=0, column=0, sticky="news")
         self.button = ttk.Button(self, text="Scan")
         self.button.grid(row=1, column=1, sticky="nesw")
 
@@ -105,28 +99,33 @@ class DeviceWindow(tk.Frame):
         self.task = self.main_window.app.loop.create_task(self.ble_loop())
 
     def make_ui(self):
-        self.frame_text = ttk.Frame(self)
-        self.v_scrollbar = ttk.Scrollbar(self.frame_text)
-        self.v_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.text = tk.Text(
-            self.frame_text,
+        # Make the frame expand to the whole window.
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
+
+        self.text = scrolledtext.ScrolledText(
+            self,
             bg="white",
-            yscrollcommand=self.v_scrollbar.set,
             state=tk.DISABLED,
         )
-        self.text.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        self.v_scrollbar.config(command=self.text.yview)
-        self.frame_text.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.text.grid(row=0, column=0, sticky="news")
 
-        self.frame_send = ttk.Frame(self)
-        self.entry = ttk.Entry(self.frame_send)
-        self.entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        self.frame_send = ttk.Frame(self, width=100)
+        self.frame_send.grid(row=1, column=0, sticky="news")
+        self.frame_send.rowconfigure(1, weight=1)
+        self.frame_send.columnconfigure(0, weight=1)
+
+        self.entry = ttk.Entry(self.frame_send, width=100)
+        self.entry.grid(row=1, column=0, sticky="news")
+        self.entry.rowconfigure(0, weight=1)
+        self.entry.columnconfigure(0, weight=1)
         self.entry.focus_set()
         self.entry.bind("<Return>", self.on_entry_return)
         self.button = ttk.Button(self.frame_send, text="⮞")
+        self.button.grid(row=1, column=1, sticky="nesw")
+        self.button.rowconfigure(1, weight=1)
+        self.button.columnconfigure(1, weight=1)
         self.button.bind("<Button-1>", self.on_entry_return)
-        self.button.pack(side=tk.RIGHT)
-        self.frame_send.pack(side=tk.BOTTOM, fill=tk.X, anchor="nw")
 
     async def ble_loop(self):
         self.ble = BLE_interface(self.main_window.app.adapter, "")
