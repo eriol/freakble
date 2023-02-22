@@ -69,7 +69,6 @@ class MainWindow(ThemedTk):
             await asyncio.sleep(0.1)
 
     def show_window(self, window):
-        print("Show window:", window)
         for w in self.windows:
             w.grid_forget(self)
 
@@ -138,7 +137,9 @@ class ScanWindow(ttk.Frame):
             "",
         )
         for i, device in enumerate(devices):
-            self.listbox.insert(i, f"{device.address} - {device.name}")
+            self.listbox.insert(
+                i, f"{device.address} (RSSI: {device.rssi}) {device.name}"
+            )
 
         self.button_scan.configure(text="Scan")
         self.button_scan["state"] = tk.NORMAL
@@ -147,7 +148,10 @@ class ScanWindow(ttk.Frame):
         self.button_connect["state"] = tk.NORMAL
 
     def on_button_connect_clicked(self):
+        device = self.listbox.get(self.listbox.curselection())
+        self.main_window.app.device = device.split()[0]
         self.main_window.show_window(DeviceWindow)
+        self.main_window.windows[DeviceWindow].connect()
 
 
 class DeviceWindow(ttk.Frame):
