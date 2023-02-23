@@ -184,12 +184,12 @@ To exit from the interactive shell use `CTRL + D` or `CTRL + C`
 The `gui` command starts a GUI of freakble. If you don't set the device address
 it will start with the following scan interface:
 
-![A screenshot of the scan inferface of the gui.](extras/gui_scan.jpg)
+![A screenshot of the scan inferface of the gui.](extras/gui_scan.png)
 
 after choosing a device you can click to the connect button to get a graphical
 REPL:
 
-![A screenshot of the graphical REPL of freakble.](extras/gui_repl.jpg)
+![A screenshot of the graphical REPL of freakble.](extras/gui_repl.png)
 
 
 ## License
