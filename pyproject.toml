@@ -12,7 +12,7 @@ description = "A simple tool to send messages into FreakWAN over Bluetooth low e
 authors = ["Daniele Tricoli <eriol@mornie.org>"]
 readme = "README.md"
 license = "BSD-3-Clause"
-repository = "https://noa.mornie.org/eriol/freakble"
+repository = "https://github.com/eriol/freakble"
 packages = [{include = "freakble", from = "src"}]
 
 [tool.poetry.dependencies]
