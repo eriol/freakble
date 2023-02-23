@@ -7,7 +7,7 @@ profile = "black"
 
 [tool.poetry]
 name = "freakble"
-version = "0.5.0"
+version = "0.5.1"
 description = "A simple tool to send messages into FreakWAN over Bluetooth low energy."
 authors = ["Daniele Tricoli <eriol@mornie.org>"]
 readme = "README.md"
@@ -29,7 +29,7 @@ freakble = "freakble.__main__:run"
 themes = ["ttkthemes"]
 
 [tool.poetry.group.extras.dependencies]
-ttkthemes = {version = "^3.2.2", optional = true}
+ttkthemes = {version = "0.5.1", optional = true}
 
 [build-system]
 requires = ["poetry-core"]
