@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.3 (2023-02-23)
+
+Fix theme installation command in README.
+
 ## 0.5.2 (2023-02-23)
 
 Make GUI themes installable from pipx/pip.
