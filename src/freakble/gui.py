@@ -8,7 +8,12 @@ import tkinter as tk
 from datetime import datetime
 from tkinter import ttk
 
-from ttkthemes import ThemedTk
+try:
+    from ttkthemes import ThemedTk
+
+    ARE_THEMES_AVAILABLE = True
+except ImportError:
+    ARE_THEMES_AVAILABLE = False
 
 from .ble import BLE_interface
 from .ble import connect as ble_connect
@@ -25,11 +30,20 @@ class App:
         self.loop = asyncio.get_event_loop()
 
     async def run(self):
-        self.window = MainWindow(self, theme="breeze")
+        if ARE_THEMES_AVAILABLE:
+            self.window = MainWindow(self, theme="breeze")
+        else:
+            self.window = MainWindow(self)
         await self.window.show()
 
 
-class MainWindow(ThemedTk):
+if ARE_THEMES_AVAILABLE:
+    BaseWindow = type("BaseWindow", (ThemedTk,), {})
+else:
+    BaseWindow = type("BaseWindow", (tk.Tk,), {})
+
+
+class MainWindow(BaseWindow):
     def __init__(self, app, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.title("freakble")
