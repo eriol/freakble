@@ -15,7 +15,7 @@ $ pipx install freakble
 
 For the GUI you can optionally install themes using:
 ```console
-$ pipx install 'freakble["themes"]'
+$ pipx install 'freakble[themes]'
 ```
 
 ### Using pip
