@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0 (2023-02-23)
+
+Add gui command.
+
 ## 0.4.0 (2023-02-15)
 
 - Set minimum Python version to 3.8 (after testing).
