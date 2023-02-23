@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.1 (2023-02-23)
+
+Make GUI theming optional.
+
 ## 0.5.0 (2023-02-23)
 
 Add gui command.
