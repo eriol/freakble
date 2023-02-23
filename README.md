@@ -1,9 +1,8 @@
 # freakble
 
-A simple tool to send messages into [FreakWAN](https://github.com/antirez/sx1276-micropython-driver/)
+A simple tool to send messages and commands into [FreakWAN](https://github.com/antirez/sx1276-micropython-driver/)
 over Bluetooth low energy.
-
-**This is still a work in progress and it's not complete.**
+It's tested under Linux but it should work also on other platforms.
 
 ## Installation
 
@@ -50,6 +49,7 @@ Options:
 
 Commands:
   deep-scan  Scan to find services of a specific device.
+  gui        Start freakble GUI.
   repl       Start a REPL with the device.
   scan       Scan to find BLE devices.
   send       Send one or more words over BLE to a specific device.
@@ -104,7 +104,7 @@ $ export FREAKBLE_DEVICE=$(freakble scan | grep FreakWAN_vuzasu | cut -d' ' -f1)
 $ freakble send "La violenza è l'ultimo rifugio degli incapaci. - Isaac Asimov"
 ```
 
-## scan
+### scan
 
 The `scan` command is used to discover BLE devices.
 
@@ -128,7 +128,7 @@ AF:AF:AF:AF:AF:AF (RSSI=-57): FreakWAN_vuzasu
 
 Please note that the address are *invented*.
 
-## deep-scan
+### deep-scan
 
 The `deep-scan` command is used to find services of a specific device.
 
@@ -144,7 +144,7 @@ Options:
 
 ```
 
-## repl
+### repl
 
 The `repl` command connects to the specified device and stats an interactive
 shell with it.
@@ -178,6 +178,19 @@ battery volts: 4.2
 Pressing `TAB` key or `!` will show the autocompletion menu.
 
 To exit from the interactive shell use `CTRL + D` or `CTRL + C`
+
+### gui
+
+The `gui` command starts a GUI of freakble. If you don't set the device address
+it will start with the following scan interface:
+
+![A screenshot of the scan inferface of the gui.](extras/gui_scan.jpg)
+
+after choosing a device you can click to the connect button to get a graphical
+REPL:
+
+![A screenshot of the graphical REPL of freakble.](extras/gui_repl.jpg)
+
 
 ## License
 
