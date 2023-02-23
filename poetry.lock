@@ -208,7 +208,7 @@ files = [
 name = "pillow"
 version = "9.4.0"
 description = "Python Imaging Library (Fork)"
-category = "dev"
+category = "main"
 optional = true
 python-versions = ">=3.7"
 files = [
@@ -431,7 +431,7 @@ files = [
 name = "ttkthemes"
 version = "3.2.2"
 description = "A group of themes for the ttk extensions of Tkinter with a Tkinter.Tk wrapper"
-category = "dev"
+category = "main"
 optional = true
 python-versions = ">=3.5"
 files = [
@@ -454,9 +454,9 @@ files = [
 ]
 
 [extras]
-themes = []
+themes = ["ttkthemes"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "c7359c8eeea68b593da9a3433c6316e61f0b2e106e81b3763abaf8e68d13d954"
+content-hash = "747b74a3556c3345ad176bc6139732609c6f7cd3471901200a8eafd129f6b308"
