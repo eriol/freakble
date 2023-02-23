@@ -13,6 +13,11 @@ The best way to install freakble is using [pipx](https://pypa.github.io/pipx/):
 $ pipx install freakble
 ```
 
+For the GUI you can optionally install themes using:
+```console
+$ pipx install 'freakble["themes"]'
+```
+
 ### Using pip
 
 ```console
