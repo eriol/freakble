@@ -459,4 +459,4 @@ themes = ["ttkthemes"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "747b74a3556c3345ad176bc6139732609c6f7cd3471901200a8eafd129f6b308"
+content-hash = "560c3ea6c8a1796eddc1aa2c9b132e4a770e125a3ffdfb864a39fc5d8aac1211"
