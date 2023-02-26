@@ -15,7 +15,7 @@ try:
 except ImportError:
     ARE_THEMES_AVAILABLE = False
 
-from .ble import scan
+from .ble import Client, scan
 
 WINDOW_SIZE = "800x600"
 
@@ -150,11 +150,10 @@ class ScanWindow(ttk.Frame):
         devices = await scan(
             self.main_window.app.adapter,
             self.main_window.app.ble_connection_timeout,
-            "",
         )
         for i, device in enumerate(devices):
             self.listbox.insert(
-                i, f"{device.address} (RSSI: {device.rssi}) {device.name}"
+                i, f"{device.address} (rssi: {device.rssi}) {device.name}"
             )
 
         self.button_scan.configure(text="Scan")
@@ -214,30 +213,33 @@ class DeviceWindow(ttk.Frame):
         self.entry.rowconfigure(0, weight=1)
         self.entry.columnconfigure(0, weight=1)
         self.entry.focus_set()
-        self.entry.bind("<Return>", self.on_entry_return)
+        self.entry.bind(
+            "<Return>", lambda event: asyncio.ensure_future(self.on_entry_return(event))
+        )
         self.button = ttk.Button(self.frame_send, text="⮞")
         self.button.grid(row=1, column=1, sticky="nesw")
         self.button.rowconfigure(1, weight=1)
         self.button.columnconfigure(1, weight=1)
-        self.button.bind("<Button-1>", self.on_entry_return)
+        self.button.bind(
+            "<Button-1>",
+            lambda event: asyncio.ensure_future(self.on_entry_return(event)),
+        )
 
     async def ble_loop(self):
-        pass
-        # self.ble = BLE_interface(self.main_window.app.adapter, "")
-        # self.ble.set_receiver(self.on_ble_data_received)
-        # await ble_connect(
-        #     self.ble,
-        #     self.main_window.app.device,
-        #     self.main_window.app.ble_connection_timeout,
-        # )
-        # await self.ble.send_loop()
+        self.client = Client(self.main_window.app.adapter, self.main_window.app.device)
+        self.client.set_receive_callback(self.on_ble_data_received)
+        try:
+            await self.client.connect(self.main_window.app.ble_connection_timeout)
+            await self.client.start()
+            await self.client.wait_until_disconnect()
+        finally:
+            await self.client.disconnect()
 
-    def send_over_ble(self, data):
-        self.ble.queue_send(bytes(data, "utf-8"))
+    async def send_over_ble(self, data):
+        await self.client.send(bytes(data, "utf-8"))
 
     def on_ble_data_received(self, data):
-        data = data.decode("utf-8")
-        self.insert_text(data)
+        self.insert_text(f"{data}\n")
 
     def insert_text(self, text):
         now = datetime.now().strftime("%y/%m/%d %H:%M:%S")
@@ -247,8 +249,8 @@ class DeviceWindow(ttk.Frame):
         # Scroll to the end.
         self.text.see(tk.END)
 
-    def on_entry_return(self, _):
+    async def on_entry_return(self, _):
         text = self.entry.get()
-        self.send_over_ble(text)
+        await self.send_over_ble(text)
         self.insert_text(f"{text}\n")
         self.entry.delete(0, len(text))
