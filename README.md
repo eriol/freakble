@@ -53,7 +53,6 @@ Options:
   --help          Show this message and exit.
 
 Commands:
-  deep-scan  Scan to find services of a specific device.
   gui        Start freakble GUI.
   repl       Start a REPL with the device.
   scan       Scan to find BLE devices.
@@ -132,22 +131,6 @@ AF:AF:AF:AF:AF:AF (RSSI=-57): FreakWAN_vuzasu
 ```
 
 Please note that the address are *invented*.
-
-### deep-scan
-
-The `deep-scan` command is used to find services of a specific device.
-
-```
-Usage: freakble deep-scan [OPTIONS]
-
-  Scan to find services of a specific device.
-
-Options:
-  --device TEXT      ble device address  [required]
-  --scan-time FLOAT  scan duration  [default: (5 secs)]
-  --help             Show this message and exit.
-
-```
 
 ### repl
 
