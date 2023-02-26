@@ -41,13 +41,13 @@ command_completer = NestedCompleter.from_nested_dict(
 
 
 class REPL:
-    """Simple interactive shell able to send data over BLE."""
+    """Simple interactive shell able to send data over Bluetooth LE."""
 
-    def __init__(self, ble) -> None:
-        # We consider the BLE interface already connected and we use it to
-        # send and receive data. The ownership remains outside of this class.
-        self.ble = ble
-        self.ble.set_receiver(self._on_ble_data_received)
+    def __init__(self, client) -> None:
+        # We use the client to set the callback and to send and receive data.
+        # The ownership remains outside of this class.
+        self._client = client
+        self._client.set_receive_callback(self._on_ble_data_received)
 
     async def shell(self):
         """Display a prompt and handle user interaction."""
@@ -56,15 +56,10 @@ class REPL:
             try:
                 with patch_stdout():
                     text = await session.prompt_async()
-                    self._send_over_ble(text)
+                    await self._client.send(bytes(text, "utf-8"))
             except (EOFError, KeyboardInterrupt):
                 raise asyncio.CancelledError
 
     def _on_ble_data_received(self, data):
-        """Print data received from ble."""
-        data = data.decode("utf-8").rstrip()
+        """Print data received from Bluetooth LE."""
         print(f"{data}")
-
-    def _send_over_ble(self, data):
-        """Send data over BLE."""
-        self.ble.queue_send(bytes(data, "utf-8"))

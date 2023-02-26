@@ -15,7 +15,7 @@ try:
 except ImportError:
     ARE_THEMES_AVAILABLE = False
 
-from .ble import BLE_interface, scan
+from .ble import scan
 
 WINDOW_SIZE = "800x600"
 
@@ -222,14 +222,15 @@ class DeviceWindow(ttk.Frame):
         self.button.bind("<Button-1>", self.on_entry_return)
 
     async def ble_loop(self):
-        self.ble = BLE_interface(self.main_window.app.adapter, "")
-        self.ble.set_receiver(self.on_ble_data_received)
+        pass
+        # self.ble = BLE_interface(self.main_window.app.adapter, "")
+        # self.ble.set_receiver(self.on_ble_data_received)
         # await ble_connect(
         #     self.ble,
         #     self.main_window.app.device,
         #     self.main_window.app.ble_connection_timeout,
         # )
-        await self.ble.send_loop()
+        # await self.ble.send_loop()
 
     def send_over_ble(self, data):
         self.ble.queue_send(bytes(data, "utf-8"))

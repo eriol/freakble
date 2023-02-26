@@ -7,7 +7,6 @@ import asyncio
 import logging
 from typing import Any, Callable
 
-from ble_serial.bluetooth.ble_interface import BLE_interface
 from bleak import BleakClient, BleakScanner
 
 from .repl import REPL
@@ -69,6 +68,7 @@ class Client:
 
     def on_rx(self, characteristic, data):
         logging.debug(characteristic, data)
+        data = data.decode("utf-8").rstrip()
 
         if self._receive_callback is not None:
             self._receive_callback(data)
@@ -123,20 +123,21 @@ async def send_text(
 async def repl_loop(
     adapter: str,
     device: str,
-    ble_connection_timeout: float,
+    timeout: float,
 ):
     """Run a REPL over BLE.
 
     This is a facade that handle also connection/disconnection.
     """
-    ble = BLE_interface(adapter, None)
-    repl = REPL(ble)
+    client = Client(adapter, device)
     try:
-        # await connect(ble, device, ble_connection_timeout)
-        await asyncio.gather(ble.send_loop(), repl.shell())
+        repl = REPL(client)
+        await client.connect(timeout)
+        await client.start()
+        await asyncio.gather(client.wait_until_disconnect(), repl.shell())
     except asyncio.CancelledError:
         pass
     except AssertionError:
         raise
     finally:
-        await ble.disconnect()
+        await client.disconnect()
