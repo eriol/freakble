@@ -14,7 +14,7 @@ from .gui import App
 
 def ble_receive_callback(data: bytes):
     """Print data received from BLE."""
-    click.echo(data)
+    click.echo(data.strip())
 
 
 @click.group()

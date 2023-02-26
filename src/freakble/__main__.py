@@ -4,20 +4,18 @@
 """A simple tool to send messages into FreakWAN over Bluetooth low energy."""
 
 import asyncio
-import logging
+import sys
 
 from .cli import get_cli
 
 
-def run():
+def run() -> None:
     """Main entrypoint."""
-    # ble-serial fire a warning on disconnect, but our main use case is to just
-    # send a message and disconnect, so we disable logging here.
-    # TODO: Make configurable by the user.
-    logging.disable()
     try:
         asyncio.run(get_cli())
-    except RuntimeError:
+    except RuntimeError as e:
+        sys.exit(str(e))
+    except KeyboardInterrupt:
         pass
 
 

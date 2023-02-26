@@ -4,42 +4,90 @@
 """BLE related stuff for freakble."""
 
 import asyncio
+import logging
+from typing import Any, Callable
 
 from ble_serial.bluetooth.ble_interface import BLE_interface
-from bleak import BleakScanner
+from bleak import BleakClient, BleakScanner
 
 from .repl import REPL
 
 __all__ = [
-    "connect",
+    "Client",
     "repl_loop",
     "scan",
     "send_text",
 ]
 
+DEFAULT_TIMEOUT = 5.0
+NORDIC_UART_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e"
+NORDIC_UART_TX_CHARACTERISTIC = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
+NORDIC_UART_RX_CHARACTERISTIC = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
 
-async def scan(adapter, timeout=5.0):
-    """Scan for BLE devices."""
+
+async def scan(adapter: str, timeout: float = DEFAULT_TIMEOUT):
+    """Scan for Bluetooth LE devices."""
     return await BleakScanner.discover(adapter=adapter, timeout=timeout)
 
 
-async def connect(ble: BLE_interface, device: str, timeout: float = 10.0):
-    """Connect to the specified device."""
-    await ble.connect(device, "public", timeout)
-    # TODO: Handle WRITE_UUID and READ_UUID.
-    await ble.setup_chars(None, None, "rw")
+class Client:
+    """Simple client for UART devices."""
 
+    def __init__(self, adapter: str, address: str) -> None:
+        self.adapter = adapter
+        self.address = address
 
-async def send(ble: BLE_interface, data: bytes, loop: bool, sleep_time: float):
-    """Send data over BLE.
+        self._receive_callback = None
+        self.disconnect_event = asyncio.Event()
+        self._client = None
 
-    Raise asyncio.CancelledError if loop == False after data is sent once.
-    """
-    while True:
-        ble.queue_send(data)
-        if not loop:
-            raise asyncio.CancelledError
-        await asyncio.sleep(sleep_time)
+    async def connect(self, timeout: float = DEFAULT_TIMEOUT):
+        device = await BleakScanner.find_device_by_address(
+            self.address, adapter=self.adapter, timeout=timeout
+        )
+        if device is None:
+            raise RuntimeError(f"device with address {self.address} not found")
+
+        self._client = BleakClient(device, disconnected_callback=self.on_disconnect)
+        await self._client.__aenter__()
+
+    async def disconnect(self):
+        if self._client is not None:
+            await self.stop()
+            await self._client.disconnect()
+
+    async def start(self):
+        if self._client is not None:
+            await self._client.start_notify(NORDIC_UART_RX_CHARACTERISTIC, self.on_rx)
+
+    async def stop(self):
+        if self._client is not None:
+            await self._client.stop_notify(NORDIC_UART_RX_CHARACTERISTIC)
+
+    def set_receive_callback(self, callback: Callable[[Any], None]):
+        self._receive_callback = callback
+
+    def on_rx(self, characteristic, data):
+        logging.debug(characteristic, data)
+
+        if self._receive_callback is not None:
+            self._receive_callback(data)
+
+    async def wait_until_disconnect(self):
+        await self.disconnect_event.wait()
+
+    def on_disconnect(self, client: BleakClient):
+        logging.debug("Disconnect...")
+        self.disconnect_event.set()
+
+    async def send(self, data):
+        if self._client is not None:
+            await self._client.write_gatt_char(NORDIC_UART_TX_CHARACTERISTIC, data)
+
+    async def send_forever(self, data: bytes, sleep_time: float):
+        while True:
+            await self.send(data)
+            await asyncio.sleep(sleep_time)
 
 
 async def send_text(
@@ -48,29 +96,28 @@ async def send_text(
     device: str,
     loop: bool,
     sleep_time: float,
-    ble_connection_timeout: float,
+    timeout: float,
     callback=None,
 ):
-    """Send text over BLE.
+    """Send text over Bluetooth LE.
 
     This is a facade that handle also connection/disconnection.
     """
-    ble = BLE_interface(adapter, None)
+    client = Client(adapter, device)
     if callback is not None:
-        ble.set_receiver(callback)
-
+        client.set_receive_callback(callback)
     try:
-        await connect(ble, device, ble_connection_timeout)
-        await asyncio.gather(
-            ble.send_loop(),
-            send(ble, bytes(text, "utf-8"), loop, sleep_time),
-        )
-    except asyncio.CancelledError:
-        pass
-    except AssertionError:
-        raise
+        await client.connect(timeout)
+        await client.start()
+        if loop:
+            await asyncio.gather(
+                client.wait_until_disconnect(),
+                client.send_forever(bytes(text, "utf-8"), sleep_time),
+            )
+        else:
+            await client.send(bytes(text, "utf-8"))
     finally:
-        await ble.disconnect()
+        await client.disconnect()
 
 
 async def repl_loop(
@@ -85,7 +132,7 @@ async def repl_loop(
     ble = BLE_interface(adapter, None)
     repl = REPL(ble)
     try:
-        await connect(ble, device, ble_connection_timeout)
+        # await connect(ble, device, ble_connection_timeout)
         await asyncio.gather(ble.send_loop(), repl.shell())
     except asyncio.CancelledError:
         pass
