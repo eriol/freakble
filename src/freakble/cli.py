@@ -8,8 +8,7 @@ import sys
 
 import asyncclick as click
 
-from . import __version__
-from .ble import repl_loop, scanner, send_text
+from . import __version__, ble
 from .gui import App
 
 
@@ -59,7 +58,7 @@ async def send(ctx, words, device, loop, sleep_time, ble_connection_timeout):
     msg = " ".join(words)
     logging.info(f"Connecting to {device}...")
     try:
-        await send_text(
+        await ble.send_text(
             ctx.obj["ADAPTER"],
             msg,
             device,
@@ -76,18 +75,12 @@ async def send(ctx, words, device, loop, sleep_time, ble_connection_timeout):
 @click.option(
     "--scan-time", default=5, show_default="5 secs", type=float, help="scan duration"
 )
-@click.option(
-    "--service-uuid",
-    default=None,
-    show_default="None",
-    type=str,
-    help="service UUID used to filter",
-)
 @click.pass_context
-async def scan(ctx, scan_time, service_uuid):
+async def scan(ctx, scan_time):
     """Scan to find BLE devices."""
-    devices = await scanner.scan(ctx.obj["ADAPTER"], scan_time, service_uuid)
-    scanner.print_list(devices)
+    devices = await ble.scan(ctx.obj["ADAPTER"], scan_time)
+    for device in devices:
+        print(f"{device.address} (rssi:{device.rssi}) {device.name}")
 
 
 @cli.command()
@@ -111,7 +104,7 @@ async def repl(ctx, device, ble_connection_timeout):
     click.echo(f"freakble {__version__} on {sys.platform}")
     click.echo(f"Connecting to {device}...")
     try:
-        await repl_loop(ctx.obj["ADAPTER"], device, ble_connection_timeout)
+        await ble.repl_loop(ctx.obj["ADAPTER"], device, ble_connection_timeout)
     except AssertionError as e:
         click.echo(click.style(e, fg="red"))
 

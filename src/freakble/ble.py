@@ -6,18 +6,21 @@
 import asyncio
 
 from ble_serial.bluetooth.ble_interface import BLE_interface
-
-# We use this module as a facade for ble_serial scanner.
-from ble_serial.scan import main as scanner
+from bleak import BleakScanner
 
 from .repl import REPL
 
 __all__ = [
     "connect",
     "repl_loop",
-    "scanner",
+    "scan",
     "send_text",
 ]
+
+
+async def scan(adapter, timeout=5.0):
+    """Scan for BLE devices."""
+    return await BleakScanner.discover(adapter=adapter, timeout=timeout)
 
 
 async def connect(ble: BLE_interface, device: str, timeout: float = 10.0):

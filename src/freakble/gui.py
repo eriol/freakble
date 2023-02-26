@@ -17,7 +17,7 @@ except ImportError:
 
 from .ble import BLE_interface
 from .ble import connect as ble_connect
-from .ble import scanner
+from .ble import scan
 
 WINDOW_SIZE = "800x600"
 
@@ -149,7 +149,7 @@ class ScanWindow(ttk.Frame):
         self.button_scan["state"] = tk.DISABLED
         self.button_scan.configure(text="Scanning...")
 
-        devices = await scanner.scan(
+        devices = await scan(
             self.main_window.app.adapter,
             self.main_window.app.ble_connection_timeout,
             "",
