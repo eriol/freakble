@@ -34,6 +34,12 @@ class App:
             self.window = MainWindow(self)
         await self.window.show()
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        self.window.destroy()
+
 
 if ARE_THEMES_AVAILABLE:
     BaseWindow = type("BaseWindow", (ThemedTk,), {})
@@ -49,6 +55,7 @@ class MainWindow(BaseWindow):
         self.option_add("*Font", "12")
 
         self.app = app
+        self.is_app_closing = False
 
         self.protocol("WM_DELETE_WINDOW", self.quit)
 
@@ -74,13 +81,10 @@ class MainWindow(BaseWindow):
         self.container.columnconfigure(0, weight=1)
 
     def quit(self):
-        self.destroy()
-        # TODO: properly close using an asyncio.Event: using click is hard to
-        # pass it from main. One possible solution is to stop using click.
-        self.app.loop.stop()
+        self.is_app_closing = True
 
     async def show(self):
-        while True:
+        while not self.is_app_closing:
             self.update()
             await asyncio.sleep(0.1)
 

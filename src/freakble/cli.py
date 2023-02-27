@@ -128,9 +128,9 @@ async def repl(ctx, device, ble_connection_timeout):
 async def gui(ctx, device, ble_connection_timeout):
     """Start freakble GUI."""
 
-    app = App()
-    app.config(ctx.obj["ADAPTER"], device, ble_connection_timeout)
-    await app.run()
+    with App() as app:
+        app.config(ctx.obj["ADAPTER"], device, ble_connection_timeout)
+        await app.run()
 
 
 @cli.command()
