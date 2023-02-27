@@ -6,6 +6,8 @@
 import asyncio
 import sys
 
+import bleak
+
 from .cli import get_cli
 
 
@@ -13,7 +15,7 @@ def run() -> None:
     """Main entrypoint."""
     try:
         asyncio.run(get_cli())
-    except RuntimeError as e:
+    except (RuntimeError, bleak.exc.BleakError) as e:
         sys.exit(str(e))
     except KeyboardInterrupt:
         pass
