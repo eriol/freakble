@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.0 (2023-02-28)
+
+- Rewrote the Bluetooth LE stuff to direcly use bleak library.
+- BREAKING CHAGES: the CLI flag to set Bluetooth LE timeout is renamed from
+  `--ble-connection-timeout` into `--timeout`.
+- Import GUI stuff inside the `gui` command so that if Python is installed
+  without `tk` other commands would work.
+
 ## 0.5.3 (2023-02-23)
 
 Fix theme installation command in README.
@@ -34,9 +42,8 @@ Add gui command.
 
 ## 0.3.0 (2023-02-11)
 
-BREAKING CHAGES:
-- Rename the environment variable to set the device address in FREAKBLE_DEVICE.
-
+- BREAKING CHAGES: Rename the environment variable to set the device address in
+  `FREAKBLE_DEVICE`.
 - Add repl command to interact with the device from terminal.
 - Move BLE stuff in a separate module.
 
