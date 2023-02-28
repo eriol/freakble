@@ -66,6 +66,8 @@ Commands:
 
 The `send` command is used to send a message to the board. You need to know the
 address of the device.
+You can specify the address of a device using the `--device` flag or the
+environment variable `FREAKBLE_DEVICE`.
 
 The complete usage is:
 ```console
@@ -102,12 +104,20 @@ $ freakble send --device AA:AA:AA:AA:AA:AA --loop FREAKNET
 You can use `FREAKBLE_DEVICE` environment variables to set the device address,
 and to not have to provide it in each commands that need a device address.
 
-For example, using `send`, if one of your device is called `FreakWAN_vuzasu`
+For example, using `send`, if one of your device is called `FW_vuzasu`
 you can do:
 
 ```console
-$ export FREAKBLE_DEVICE=$(freakble scan | grep FreakWAN_vuzasu | cut -d' ' -f1)
+$ export FREAKBLE_DEVICE=$(freakble scan | grep FW_vuzasu | cut -d' ' -f1)
 $ freakble send "La violenza è l'ultimo rifugio degli incapaci. - Isaac Asimov"
+```
+
+FreakWAN supports commands starting with `!` character (see the list on
+FreakWAN README):
+
+```console
+$ freakble send '!bat'
+battery 99%, 4.20 volts
 ```
 
 ### scan
@@ -127,8 +137,8 @@ Options:
 For example:
 ```
 $ freakble scan
-AB:AB:AB:AB:AB:AB (RSSI=-52): FW_timatu
-AF:AF:AF:AF:AF:AF (RSSI=-57): FW_vuzasu
+AB:AB:AB:AB:AB:AB (rssi:-52) FW_timatu
+AF:AF:AF:AF:AF:AF (rssi:-57) FW_vuzasu
 ```
 
 ### repl
@@ -137,7 +147,7 @@ The `repl` command connects to the specified device and stats an interactive
 shell with it.
 
 ```console
-$ export FREAKBLE_DEVICE=$(freakble scan | grep FreakWAN | cut -d' ' -f1)
+$ export FREAKBLE_DEVICE=$(freakble scan | grep FW | cut -d' ' -f1)
 freakble 0.3.0a0 on linux
 Connecting to AB:AB:AB:AB:AB:AB...
 Φ]
