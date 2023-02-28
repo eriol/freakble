@@ -80,6 +80,7 @@ Options:
   --device TEXT       ble device address  [required]
   --sleep-time FLOAT  sleep between messages sent with --loop  [default: (1
                       sec)]
+  --timeout FLOAT     Bluetooth LE connection timeout  [default: (10 secs)]
   --help              Show this message and exit.
 ```
 
@@ -120,6 +121,11 @@ $ freakble send '!bat'
 battery 99%, 4.20 volts
 ```
 
+If you don't know what to say, you can always tempt the fates! :)
+```console
+freakble send "$(fortune)"
+```
+
 ### scan
 
 The `scan` command is used to discover Bluetooth LE devices.
@@ -145,6 +151,19 @@ AF:AF:AF:AF:AF:AF (rssi:-57) FW_vuzasu
 
 The `repl` command connects to the specified device and stats an interactive
 shell with it.
+The complete usage is:
+```
+Usage: freakble repl [OPTIONS]
+
+  Start a REPL with the device.
+
+Options:
+  --device TEXT    ble device address  [required]
+  --timeout FLOAT  Bluetooth LE connection timeout  [default: (10 secs)]
+  --help           Show this message and exit.
+```
+
+For example:
 
 ```console
 $ export FREAKBLE_DEVICE=$(freakble scan | grep FW | cut -d' ' -f1)
@@ -167,7 +186,7 @@ For example, the following text is sent as a message in the network:
 Instead commands make you able to get info or configure your FreakWAN node:
 ```
 Φ] !help
-Commands: !automsg !sp !cr !bw !freq
+Commands: !automsg !pw !sp !cr !bw !freq !preset !ls !font !last !addkey !delkey !keys !usekey !nokey
 Φ] !bat
 battery volts: 4.2
 ```
