@@ -126,6 +126,9 @@ If you don't know what to say, you can always tempt the fates! :)
 freakble send "$(fortune)"
 ```
 
+Please note that this command handle also disconnection from Bluetooth LE so it
+runs in a few seconds.
+
 ### scan
 
 The `scan` command is used to discover Bluetooth LE devices.
