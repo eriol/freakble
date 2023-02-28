@@ -9,7 +9,6 @@ import sys
 import asyncclick as click
 
 from . import __version__, ble
-from .gui import App
 
 
 def ble_receive_callback(data: bytes):
@@ -127,6 +126,10 @@ async def repl(ctx, device, timeout):
 @click.pass_context
 async def gui(ctx, device, ble_connection_timeout):
     """Start freakble GUI."""
+
+    # Imported here so that the others commands will works if tkinter is not
+    # installed. It's OK to blow up to let user know for now.
+    from .gui import App
 
     with App() as app:
         app.config(ctx.obj["ADAPTER"], device, ble_connection_timeout)
