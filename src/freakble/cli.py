@@ -13,7 +13,7 @@ from .gui import App
 
 
 def ble_receive_callback(data: bytes):
-    """Print data received from BLE."""
+    """Print data received from Bluetooth LE."""
     click.echo(data)
 
 
@@ -45,15 +45,15 @@ def cli(ctx, adapter):
     help="sleep between messages sent with --loop",
 )
 @click.option(
-    "--ble-connection-timeout",
+    "--timeout",
     default=10,
     show_default="10 secs",
     type=float,
-    help="BLE connection timeout",
+    help="Bluetooth LE connection timeout",
 )
 @click.argument("words", type=str, nargs=-1)
 @click.pass_context
-async def send(ctx, words, device, loop, sleep_time, ble_connection_timeout):
+async def send(ctx, words, device, loop, sleep_time, timeout):
     """Send one or more words over BLE to a specific device."""
     msg = " ".join(words)
     logging.info(f"Connecting to {device}...")
@@ -64,7 +64,7 @@ async def send(ctx, words, device, loop, sleep_time, ble_connection_timeout):
             device,
             loop,
             sleep_time,
-            ble_connection_timeout,
+            timeout,
             ble_receive_callback,
         )
     except AssertionError as e:
@@ -92,19 +92,19 @@ async def scan(ctx, scan_time):
     help="ble device address",
 )
 @click.option(
-    "--ble-connection-timeout",
+    "--timeout",
     default=10,
     show_default="10 secs",
     type=float,
-    help="BLE connection timeout",
+    help="Bluetooth LE connection timeout",
 )
 @click.pass_context
-async def repl(ctx, device, ble_connection_timeout):
+async def repl(ctx, device, timeout):
     """Start a REPL with the device."""
     click.echo(f"freakble {__version__} on {sys.platform}")
     click.echo(f"Connecting to {device}...")
     try:
-        await ble.repl_loop(ctx.obj["ADAPTER"], device, ble_connection_timeout)
+        await ble.repl_loop(ctx.obj["ADAPTER"], device, timeout)
     except AssertionError as e:
         click.echo(click.style(e, fg="red"))
 
@@ -122,7 +122,7 @@ async def repl(ctx, device, ble_connection_timeout):
     default=10,
     show_default="10 secs",
     type=float,
-    help="BLE connection timeout",
+    help="Bluetooth LE connection timeout",
 )
 @click.pass_context
 async def gui(ctx, device, ble_connection_timeout):
