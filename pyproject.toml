@@ -7,7 +7,7 @@ profile = "black"
 
 [tool.poetry]
 name = "freakble"
-version = "0.6.0a0"
+version = "0.6.0"
 description = "A simple tool to send messages into FreakWAN over Bluetooth low energy."
 authors = ["Daniele Tricoli <eriol@mornie.org>"]
 readme = "README.md"
