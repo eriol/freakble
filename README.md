@@ -1,8 +1,8 @@
 # freakble
 
-A simple tool to send messages and commands into [FreakWAN](https://github.com/antirez/sx1276-micropython-driver/)
+A simple tool to send messages and commands into [FreakWAN](https://github.com/antirez/freakwan)
 over Bluetooth low energy.
-It's tested under Linux but it should work also on other platforms.
+It's tested under Linux and Windows but it should work also on MacOS.
 
 ## Installation
 
@@ -19,6 +19,8 @@ $ pipx install 'freakble[themes]'
 ```
 
 ### Using pip
+
+*When using pip it's suggested to work inside a virtualenv.*
 
 ```console
 $ python -m pip install freakble
@@ -53,11 +55,11 @@ Options:
   --help          Show this message and exit.
 
 Commands:
-  gui        Start freakble GUI.
-  repl       Start a REPL with the device.
-  scan       Scan to find BLE devices.
-  send       Send one or more words over BLE to a specific device.
-  version    Return freakble version.
+  gui      Start freakble GUI.
+  repl     Start a REPL with the device.
+  scan     Scan to find BLE devices.
+  send     Send one or more words over BLE to a specific device.
+  version  Return freakble version.
 ```
 
 ### send
@@ -110,7 +112,7 @@ $ freakble send "La violenza è l'ultimo rifugio degli incapaci. - Isaac Asimov"
 
 ### scan
 
-The `scan` command is used to discover BLE devices.
+The `scan` command is used to discover Bluetooth LE devices.
 
 ```console
 Usage: freakble scan [OPTIONS]
@@ -118,19 +120,16 @@ Usage: freakble scan [OPTIONS]
   Scan to find BLE devices.
 
 Options:
-  --scan-time FLOAT    scan duration  [default: (5 secs)]
-  --service-uuid TEXT  service UUID used to filter  [default: (None)]
-  --help               Show this message and exit.
+  --scan-time FLOAT  scan duration  [default: (5 secs)]
+  --help             Show this message and exit.
 ```
 
 For example:
 ```
 $ freakble scan
-AB:AB:AB:AB:AB:AB (RSSI=-52): FreakWAN_timatu
-AF:AF:AF:AF:AF:AF (RSSI=-57): FreakWAN_vuzasu
+AB:AB:AB:AB:AB:AB (RSSI=-52): FW_timatu
+AF:AF:AF:AF:AF:AF (RSSI=-57): FW_vuzasu
 ```
-
-Please note that the address are *invented*.
 
 ### repl
 
