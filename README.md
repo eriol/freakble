@@ -2,7 +2,7 @@
 
 A simple tool to send messages and commands into [FreakWAN](https://github.com/antirez/freakwan)
 over Bluetooth low energy.
-It's tested under Linux and Windows but it should work also on MacOS.
+It's tested under Linux, MacOS and Windows.
 
 ## Installation
 
