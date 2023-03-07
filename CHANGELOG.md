@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.1 (2023-03-07)
+
+Add support for MacOS, thanks to Giuseppe Marco Randazzo.
+
 ## 0.6.0 (2023-02-28)
 
 - Rewrote the Bluetooth LE stuff to direcly use bleak library.
