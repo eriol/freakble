@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.2 (2023-03-08)
+
+- Add project classifiers
+- Add more commands autocompetion
+- Ensure we always use a write-with-response.
+
 ## 0.6.1 (2023-03-07)
 
 Add support for MacOS, thanks to Giuseppe Marco Randazzo.
