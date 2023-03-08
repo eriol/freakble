@@ -27,15 +27,25 @@ BW_VALUES = [
     250000,
     500000,
 ]
+CR_VALUES = range(5, 9)
+PW_VALUES = range(2, 21)
+SP_VALUES = range(6, 13)
 
 command_completer = NestedCompleter.from_nested_dict(
     {
         "!automsg": {"on": None, "off": None},
         "!bat": None,
         "!bw": dict(zip(map(str, BW_VALUES), cycle([None]))),
-        "!cr": dict(zip(map(str, range(5, 9)), cycle([None]))),
+        "!config": {"save": None, "reset": None},
+        "!cr": dict(zip(map(str, CR_VALUES), cycle([None]))),
+        "!font": {"big": None, "small": None},
         "!help": None,
-        "!sp": dict(zip(map(str, range(6, 13)), cycle([None]))),
+        "!irc": {"start": None, "stop": None},
+        "!last": None,
+        "!ls": None,
+        "!pw": dict(zip(map(str, PW_VALUES), cycle([None]))),
+        "!quiet": {"yes": None, "no": None},
+        "!sp": dict(zip(map(str, SP_VALUES), cycle([None]))),
     }
 )
 
