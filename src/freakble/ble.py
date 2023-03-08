@@ -50,12 +50,17 @@ class Client:
             raise RuntimeError(f"device with address {self.address} not found")
         self._client = BleakClient(device, disconnected_callback=self.on_disconnect)
         await self._client.__aenter__()
-        for service in self._client.services:
-            for char in service.characteristics:
-                if "write" in char.properties:
-                    self.uart_tx_char = char
-                elif "notify" in char.properties:
-                    self.uart_rx_char = char
+
+        uart_service = self._client.services.get_service(NORDIC_UART_SERVICE_UUID)
+        if uart_service is None:
+            raise RuntimeError(
+                f"device with address {self.address} doesn't have an UART service"
+            )
+        for char in uart_service.characteristics:
+            if "write" in char.properties:
+                self.uart_tx_char = char
+            elif "notify" in char.properties:
+                self.uart_rx_char = char
 
     async def disconnect(self):
         if self._client is not None:
