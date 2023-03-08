@@ -94,7 +94,9 @@ class Client:
 
     async def send(self, data):
         if self._client and self.uart_tx_char:
-            await self._client.write_gatt_char(self.uart_tx_char, data)
+            # We always need to perform a write-with-response because on MacOS we will
+            # not write at all.
+            await self._client.write_gatt_char(self.uart_tx_char, data, response=True)
 
     async def send_forever(self, data: bytes, sleep_time: float):
         while True:
