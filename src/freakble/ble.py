@@ -63,11 +63,11 @@ class Client:
             await self._client.disconnect()
 
     async def start(self):
-        if self._client is not None:
+        if self._client and self.uart_rx_char:
             await self._client.start_notify(self.uart_rx_char, self.on_rx)
 
     async def stop(self):
-        if self._client is not None:
+        if self._client and self.uart_rx_char:
             await self._client.stop_notify(self.uart_rx_char)
 
     def set_receive_callback(self, callback: Callable[[Any], None]):
@@ -88,7 +88,7 @@ class Client:
         self.disconnect_event.set()
 
     async def send(self, data):
-        if self._client is not None:
+        if self._client and self.uart_tx_char:
             await self._client.write_gatt_char(self.uart_tx_char, data)
 
     async def send_forever(self, data: bytes, sleep_time: float):
