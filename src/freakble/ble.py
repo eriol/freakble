@@ -24,7 +24,9 @@ NORDIC_UART_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e"
 
 async def scan(adapter: str, timeout: float = DEFAULT_TIMEOUT):
     """Scan for Bluetooth LE devices."""
-    return await BleakScanner.discover(adapter=adapter, timeout=timeout)
+    return await BleakScanner.discover(
+        adapter=adapter, timeout=timeout, service_uuids=[NORDIC_UART_SERVICE_UUID]
+    )
 
 
 class Client:
